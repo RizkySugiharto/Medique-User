@@ -1,5 +1,38 @@
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
+# Installation
+
+## Step 1: Clone the repository
+
+First, you will need clone the github repository.
+
+```bash
+git clone https://github.com/RizkySugiharto/Medique-User.git
+```
+
+## Step 2: Install all node modules
+
+After you clone the repository, you now have to install all the required modules.
+
+```bash
+cd Medique-User
+npm install
+```
+
+## Step 3: Running initialization commands
+
+After install requireed modules, now you have to run all of this commands in order to clear all of cache, so it will back to the nature :)
+
+```bash
+npm cache clean --force
+watchman watch-del-all
+del %localappdata%Temphaste-map-*
+del %localappdata%Tempmetro-cache
+npm start -- --reset-cache
+```
+
+After the metro starting, you can quit just by press `q` key in your keyboard. But if you want to run the app, you can only to see the list off commands in the metro console :)
+
 # Getting Started
 
 >**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
