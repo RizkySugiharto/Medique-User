@@ -214,6 +214,7 @@ function App(): React.JSX.Element {
           <Stack.Screen name='Login' component={LoginScreen}/>
           <Stack.Screen name='ForgotPassword' component={ForgotPasswordGroup}/>
           <Stack.Screen name='CreateNewPassword' component={CreateNewPasswordScreen}/>
+          <Stack.Screen name='Activity' component={Activity}/>
           <Stack.Screen name='PopularDoctor' component={PopularDoctorScreen}/>
           <Stack.Screen name='DoctorCategories' component={DoctorCategoriesScreen}/>
           {/* <Stack.Screen name='DoctorDetails' component={DoctorDetailsScreen}/> */}
