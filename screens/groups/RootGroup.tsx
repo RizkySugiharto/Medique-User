@@ -3,6 +3,7 @@ import { BottomTabBarProps, createBottomTabNavigator } from '@react-navigation/b
 import { Animated, Image, Pressable, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import Colors from '../../styles/colors';
 import HomeScreen from '../HomeScreen';
+import Activity from '../activity';
 
 function TabBar({ state, descriptors, navigation}: BottomTabBarProps) {
   const window = useWindowDimensions();
@@ -70,7 +71,7 @@ export default (): React.JSX.Element => {
       screenOptions={{ headerShown: false }}>
       <Tab.Screen name='Home' component={HomeScreen}/>
       <Tab.Screen name='Favorite' component={HomeScreen}/>
-      <Tab.Screen name='Activity' component={HomeScreen}/>
+      <Tab.Screen name='Activity' component={Activity}/>
       <Tab.Screen name='Profile' component={HomeScreen}/>
     </Tab.Navigator>
   );

@@ -22,6 +22,7 @@ import CreateNewPasswordScreen from './screens/CreateNewPasswordScreen';
 import RootGroup from './screens/groups/RootGroup';
 import PopularDoctorScreen from './screens/PopularDoctorScreen';
 import DoctorCategoriesScreen from './screens/DoctorCategoriesScreen';
+import Activity from './screens/activity';
 // import DoctorDetailsScreen from './screens/DoctorDetailsScreen';
 
 Geolocation.setRNConfiguration({
@@ -44,8 +45,9 @@ function App(): React.JSX.Element {
           <Stack.Screen name='CreateNewPassword' component={CreateNewPasswordScreen}/>
           <Stack.Screen name='PopularDoctor' component={PopularDoctorScreen}/>
           <Stack.Screen name='DoctorCategories' component={DoctorCategoriesScreen}/>
-          {/* <Stack.Screen name='DoctorDetails' component={DoctorDetailsScreen}/> */}
           <Stack.Screen name='Root' component={RootGroup}/>
+          <Stack.Screen name='Activity' component={Activity}/>
+
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
