@@ -1,63 +1,84 @@
 import React from 'react';
 import { BottomTabBarProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Animated, Image, Pressable, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Animated, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Colors from '../../styles/colors';
 import HomeScreen from '../HomeScreen';
+import SessionStorage from 'react-native-session-storage';
 
 function TabBar({ state, descriptors, navigation}: BottomTabBarProps) {
-  const window = useWindowDimensions();
+  const navbarStatusView = SessionStorage.getItem('@navbar_status_view')
+  console.log(navbarStatusView)
 
   return (
-    <View style={[styles.tabBar]}>
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const label = options.tabBarLabel !== undefined
-          ? options.tabBarLabel
-          : options.title !== undefined
-          ? options.title
-          : route.name;
+    <>
+      {navbarStatusView && 
+      <View style={{
+        backgroundColor: Colors.secondary,
+        borderColor: Colors.primary,
+        overflow: 'hidden',
+        borderWidth: 2,
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40,
+        paddingBottom: 46,
+        position: 'absolute',
+        bottom: 70,
+        left: 24,
+        right: 24,
+      }}>
+        {navbarStatusView}
+      </View>
+      }
+      <View style={[styles.tabBar]}>
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const label = options.tabBarLabel !== undefined
+            ? options.tabBarLabel
+            : options.title !== undefined
+            ? options.title
+            : route.name;
 
-        const isFocused = state.index === index;
+          const isFocused = state.index === index;
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          });
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
-          }
-        };
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            }
+          };
 
-        const icons = [[
-            require('../../assets/img/ic_tab_home_inactive.png'),
-            require('../../assets/img/ic_tab_home_active.png'),
-          ],[
-            require('../../assets/img/ic_tab_favorite_inactive.png'),
-            require('../../assets/img/ic_tab_favorite_active.png'),
-          ],[
-            require('../../assets/img/ic_tab_activity_inactive.png'),
-            require('../../assets/img/ic_tab_activity_active.png'),
-          ],[
-            require('../../assets/img/ic_tab_profile_inactive.png'),
-            require('../../assets/img/ic_tab_profile_active.png'),
-          ],
-        ]
-        
-        return (
-          <View key={index}>
-            <TouchableOpacity
-              onPress={onPress}
-              activeOpacity={0.85}
-              style={[styles.tabBarButton, isFocused && styles.tabBarButtonOnActive]}>
-                <Image source={icons[index][isFocused ? 1 : 0]} />
-            </TouchableOpacity>
-          </View>
-        )
-      })}
-    </View>
+          const icons = [[
+              require('../../assets/img/ic_tab_home_inactive.png'),
+              require('../../assets/img/ic_tab_home_active.png'),
+            ],[
+              require('../../assets/img/ic_tab_favorite_inactive.png'),
+              require('../../assets/img/ic_tab_favorite_active.png'),
+            ],[
+              require('../../assets/img/ic_tab_activity_inactive.png'),
+              require('../../assets/img/ic_tab_activity_active.png'),
+            ],[
+              require('../../assets/img/ic_tab_profile_inactive.png'),
+              require('../../assets/img/ic_tab_profile_active.png'),
+            ],
+          ]
+          
+          return (
+            <View key={index}>
+              <TouchableOpacity
+                onPress={onPress}
+                activeOpacity={0.85}
+                style={[styles.tabBarButton, isFocused && styles.tabBarButtonOnActive]}>
+                  <Image source={icons[index][isFocused ? 1 : 0]} />
+              </TouchableOpacity>
+            </View>
+          )
+        })}
+      </View>
+    </>
   )
 }
 

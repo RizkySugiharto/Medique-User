@@ -16,14 +16,20 @@ interface Props {
   label: string,
   containerStyle?: StyleProp<ViewStyle>,
   labelStyle?: StyleProp<TextStyle>,
+  onPress?: () => void,
 }
 
-function StackHeaderBar({ label, containerStyle, labelStyle }: Props): React.JSX.Element {
+function StackHeaderBar({ label, containerStyle, labelStyle, onPress }: Props): React.JSX.Element {
   const navigation = useNavigation();
 
   return (
     <View style={[styles.container, containerStyle]}>
-      <TouchableOpacity activeOpacity={0.6} onPress={() => navigation.canGoBack() && navigation.goBack()}>
+      <TouchableOpacity
+        activeOpacity={0.6}
+        onPress={
+          onPress ? onPress :
+          () => navigation.canGoBack() && navigation.goBack()
+        }>
         <Image source={require('../assets/img/ic_back_arrow.png')} style={styles.icon} />
       </TouchableOpacity>
       <Text style={[styles.label, labelStyle]}>{label}</Text>

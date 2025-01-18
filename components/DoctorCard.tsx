@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Colors  from '../styles/colors';
 import { Rating } from '@kolking/react-native-rating';
+import { useNavigation } from '@react-navigation/native';
 
 interface Props {
   data: {
@@ -23,21 +24,36 @@ interface Props {
 
 function DoctorCard({ data }: Props): React.JSX.Element {
   const window = useWindowDimensions()
+  const navigation = useNavigation();
   const profileSize = ( ( window.width - 24 * 2) - 11 ) / 2
+  const [favorite, setFavorite] = useState(data.favorite);
+  const handleFavorite = () => {
+    data.favorite = !data.favorite
+    console.log(data.favorite)
+    setFavorite(data.favorite)
+  }
 
   return (
     <TouchableOpacity
+      onPress={() => navigation.navigate('DoctorDetails' as never)}
       activeOpacity={0.8}
       style={{ width: profileSize }}>
-      <View style={styles.favorite}>
+      <TouchableOpacity
+        onPress={handleFavorite}
+        activeOpacity={(0.75)}
+        style={styles.favorite}>
         <Image
           source={
-            data.favorite ?
-            require('../assets/img/ic_favorite_outline.png')
+            favorite ?
+            require('../assets/img/ic_favorite_filled.png')
             :
             require('../assets/img/ic_favorite_outline.png')
-          } />
-      </View>
+          }
+          style={{
+            width: 28,
+            height: 28,
+          }}/>
+      </TouchableOpacity>
       <Image source={data.profile} style={[styles.profile, { width: profileSize, height: profileSize }]} />
       <View style={{ height: 12 }} />
       <Text style={styles.name}>{data.name}</Text>

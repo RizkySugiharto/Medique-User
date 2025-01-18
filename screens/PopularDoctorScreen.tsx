@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,41 +15,6 @@ import DoctorCard from '../components/DoctorCard';
 import StackHeaderBar from '../components/StackHeaderBar';
 import SessionStorage from 'react-native-session-storage';
 
-const categories = [
-  {
-    icon: require('../assets/img/ic_pediatrician_specialist.png'),
-    name: 'Dokter Spesialis Anak',
-  },
-  {
-    icon: require('../assets/img/ic_general_practitioners.png'),
-    name: 'Dokter Umum',
-  },
-  {
-    icon: require('../assets/img/ic_nutrition_specialist_doctor.png'),
-    name: 'Dokter Spesialis Gizi',
-  },
-  {
-    icon: require('../assets/img/ic_psychiatrist.png'),
-    name: 'Psikiater',
-  },
-  {
-    icon: require('../assets/img/ic_ent_specialist_doctor.png'),
-    name: 'Dokter Spesialis THT',
-  },
-  {
-    icon: require('../assets/img/ic_rehabilitation_doctor.png'),
-    name: 'Dokter Rehabilitasi',
-  },
-  {
-    icon: require('../assets/img/ic_allergy_&_immunology_doctor.png'),
-    name: 'Dokter Alergi & Imunologi',
-  },
-  {
-    icon: require('../assets/img/ic_internal_medicine_specialist.png'),
-    name: 'Dokter Spesialis Penyakit Dalam',
-  },
-]
-
 const doctorData = {
   profile: require('../assets/img/placeholder_doctor.png'),
   name: 'Dr. Abdul',
@@ -61,20 +26,19 @@ const doctorData = {
 
 function PopularDoctorScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const [selectedCategory, setSelectedCategory] = useState(0);
-  const [selected, setSelected] = useState<number[]>([]);
+  const categories = SessionStorage.getItem('@categories')?.split(0, 4)
   const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState<number>(0);
 
   useFocusEffect(React.useCallback(() => {
-    if (SessionStorage.getItem('@selected_categories') !== undefined) {
-      setSelected(SessionStorage.getItem('@selected_categories'))
+    if (SessionStorage.getItem('@selected_category') !== undefined) {
+      setSelected(SessionStorage.getItem('@selected_category'))
     }
   }, []))
 
-  function handlePressOnCategoryCard(index: number, isSelected: boolean) {
-    let newSelected = isSelected ? selected.filter(value => value !== index) : [...selected, index]
-    setSelected(newSelected)
-    SessionStorage.setItem('@selected_categories', newSelected)
+  function handlePressOnCategoryCard(index: number) {
+    setSelected(index)
+    SessionStorage.setItem('@selected_category', index)
   }
 
   return (
@@ -96,16 +60,13 @@ function PopularDoctorScreen(): React.JSX.Element {
       <View>
         <FlatList
           data={categories}
-          renderItem={({ index, item }) => {
-            const isSelected = selected.includes(index)
-            return (
-              <CategoryCard
-                icon={item.icon}
-                name={item.name}
-                selected={isSelected}
-                onPress={() => handlePressOnCategoryCard(index, isSelected)} />
-            )
-          }}
+          renderItem={({ index, item }) => (
+            <CategoryCard
+              icon={item.icon}
+              name={item.name}
+              selected={selected === index}
+              onPress={() => handlePressOnCategoryCard(index)} />
+          )}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           ItemSeparatorComponent={() => <View style={{ width: 10 }} />}

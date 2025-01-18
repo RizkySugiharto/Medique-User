@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
-import AuthInput from '../components/AuthInput';
+import LabeledInput from '../components/LabeledInput';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 import Button from '../components/Button';
 
@@ -30,13 +30,13 @@ function LoginScreen(): React.JSX.Element {
           <Text style={styles.normalText}>Lorem ipsum dolor sit amet, consectur adipiscing elit. Sed do</Text>
         </View>
         <View style={{marginBottom: 26}}>
-          <AuthInput
+          <LabeledInput
             value={email}
             setValue={setEmail}
             name='Email :'
             placeholder='Example@gmail.com'/>
           <View style={{height: 26}}/>
-          <AuthInput
+          <LabeledInput
             value={password}
             setValue={setPassword}
             name='Password :'
