@@ -13,55 +13,21 @@ import CategoryCard from '../components/CategoryCard';
 import StackHeaderBar from '../components/StackHeaderBar';
 import SessionStorage from 'react-native-session-storage';
 
-const categories = [
-  {
-    icon: require('../assets/img/ic_pediatrician_specialist.png'),
-    name: 'Dokter Spesialis Anak',
-  },
-  {
-    icon: require('../assets/img/ic_general_practitioners.png'),
-    name: 'Dokter Umum',
-  },
-  {
-    icon: require('../assets/img/ic_nutrition_specialist_doctor.png'),
-    name: 'Dokter Spesialis Gizi',
-  },
-  {
-    icon: require('../assets/img/ic_psychiatrist.png'),
-    name: 'Psikiater',
-  },
-  {
-    icon: require('../assets/img/ic_ent_specialist_doctor.png'),
-    name: 'Dokter Spesialis THT',
-  },
-  {
-    icon: require('../assets/img/ic_rehabilitation_doctor.png'),
-    name: 'Dokter Rehabilitasi',
-  },
-  {
-    icon: require('../assets/img/ic_allergy_&_immunology_doctor.png'),
-    name: 'Dokter Alergi & Imunologi',
-  },
-  {
-    icon: require('../assets/img/ic_internal_medicine_specialist.png'),
-    name: 'Dokter Spesialis Penyakit Dalam',
-  },
-]
 
 function DoctorCategories(): React.JSX.Element {
   const navigation = useNavigation();
-  const [selected, setSelected] = useState<number[]>([]);
+  const categories = SessionStorage.getItem('@categories')
+  const [selected, setSelected] = useState<number>(0);
 
   useFocusEffect(React.useCallback(() => {
-    if (SessionStorage.getItem('@selected_categories') !== undefined) {
-      setSelected(SessionStorage.getItem('@selected_categories'))
+    if (SessionStorage.getItem('@selected_category') !== undefined) {
+      setSelected(SessionStorage.getItem('@selected_category'))
     }
   }, []))
 
-  function handlePressOnCategoryCard(index: number, isSelected: boolean) {
-    let newSelected = isSelected ? selected.filter(value => value !== index) : [...selected, index]
-    setSelected(newSelected)
-    SessionStorage.setItem('@selected_categories', newSelected)
+  function handlePressOnCategoryCard(index: number) {
+    setSelected(index)
+    SessionStorage.setItem('@selected_category', index)
   }
 
   return (
@@ -79,16 +45,13 @@ function DoctorCategories(): React.JSX.Element {
         listKey='categories'
         data={categories}
         additionalRowStyle={styles.rowCategories}
-        renderItem={({ index, item }) => {
-          const isSelected = selected.includes(index)
-          return (
-            <CategoryCard
-              icon={item.icon}
-              name={item.name}
-              selected={isSelected}
-              onPress={() => handlePressOnCategoryCard(index, isSelected)} />
-          )
-        }}
+        renderItem={({ index, item }) => (
+          <CategoryCard
+            icon={item.icon}
+            name={item.name}
+            selected={selected === index}
+            onPress={() => handlePressOnCategoryCard(index)} />
+        )}
         />
     </ScrollView>
   );

@@ -19,7 +19,7 @@ function TemplateScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
-    padding: 20,
+    padding: 24,
     backgroundColor: Colors.bodyColor
   },
 });

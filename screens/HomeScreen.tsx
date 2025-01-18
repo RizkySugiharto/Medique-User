@@ -20,14 +20,40 @@ const userData = {
   name: 'Frendi',
 }
 
-const doctorData = {
-  profile: require('../assets/img/placeholder_doctor.png'),
-  name: 'Dr. Abdul',
-  category: 'Dokter Umum',
-  favorite: false,
-  rating: 4.8,
-  experience: 8
-}
+const doctors = [
+  {
+    profile: require('../assets/img/placeholder_doctor.png'),
+    name: 'Dr. Abdul',
+    category: 'Dokter Umum',
+    favorite: false,
+    rating: 4.8,
+    experience: 8,
+  },
+  {
+    profile: require('../assets/img/placeholder_doctor.png'),
+    name: 'Dr. Abdul',
+    category: 'Dokter Umum',
+    favorite: false,
+    rating: 4.8,
+    experience: 8,
+  },
+  {
+    profile: require('../assets/img/placeholder_doctor.png'),
+    name: 'Dr. Abdul',
+    category: 'Dokter Umum',
+    favorite: false,
+    rating: 4.8,
+    experience: 8,
+  },
+  {
+    profile: require('../assets/img/placeholder_doctor.png'),
+    name: 'Dr. Abdul',
+    category: 'Dokter Umum',
+    favorite: false,
+    rating: 4.8,
+    experience: 8,
+  },
+]
 
 const articles = [
   {
@@ -57,8 +83,8 @@ function HomeScreen(): React.JSX.Element {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             <Image source={require('../assets/img/placeholder_user.png')} style={styles.profile} />
-            <View style={{width: 4}} />
-            <View style={{ alignSelf: 'flex-end', justifyContent: 'flex-end' }}>
+            <View style={{ width: 16 }} />
+            <View style={{ alignSelf: 'center', justifyContent: 'center' }}>
               <Text style={styles.username}>Hi,Frendi</Text>
               <Text style={styles.greeting}>Selamat Sore!</Text>
             </View>
@@ -85,6 +111,7 @@ function HomeScreen(): React.JSX.Element {
           <View style={{width: 16}}/>
           <TouchableOpacity
             activeOpacity={0.8}
+            onPress={() => navigation.navigate('OrderDoctor' as never)}
             style={[styles.service, { backgroundColor: '#3A6AF4', justifyContent: 'flex-end', overflow: 'hidden' }]}>
             <Text style={[styles.serviceName, { color: Colors.textColorWhite, paddingTop: 4 }]}>Dokter</Text>
             <Image source={require('../assets/img/home_doctor.png')} style={{
@@ -97,13 +124,15 @@ function HomeScreen(): React.JSX.Element {
         <TouchableOpacity
           activeOpacity={0.8}
           style={[styles.service, { backgroundColor: '#D42358', overflow: 'hidden', flexDirection: 'row', flex: 0 }]}>
-          <View style={{ justifyContent: 'space-between', width: 200 }}>
-            <Text style={[styles.serviceName, { color: Colors.textColorWhite, fontFamily: 'Manrope-Bold' }]}>Medique apa sih itu ?</Text>
-            <Text>
-              <Text style={[styles.serviceName, { color: Colors.textColorWhite }]} >yuk! kita kenal medique lebih dalam dengan cara</Text>
-              <View style={{width: 4}}/>
-              <Text style={[styles.serviceName, { color: Colors.textColorWhite, fontFamily: 'Manrope-Bold' }]} >kilk disini</Text>
-            </Text>
+          <View style={{ justifyContent: 'center', width: 200 }}>
+            <Text style={[
+              styles.serviceName,
+              {
+                color: Colors.textColorWhite,
+                fontFamily: 'Manrope-Bold',
+              }]}>
+                Dapatkan Voucher Menarik untuk Layanan Kesehatan!
+              </Text>
           </View>
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Image source={require('../assets/img/home_doctor_medic.png')} style={{ height: 132, marginVertical: -10 }} />
@@ -119,11 +148,21 @@ function HomeScreen(): React.JSX.Element {
           </TouchableOpacity>
         </View>
         <View style={{ height: 20 }} />
-        <View style={{ flexDirection: 'row' }}>
-          <DoctorCard data={doctorData} />
-          <View style={{ width: 22 }} />
-          <DoctorCard data={doctorData} />
-        </View>
+      </View>
+      <View>
+        <FlatList
+          data={doctors}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item, index }) => (
+            <DoctorCard data={item} />
+          )}
+          ItemSeparatorComponent={() => <View style={{ width: 24 }} />}
+          ListHeaderComponent={() => <View style={{ width: 24 }} />}
+          ListFooterComponent={() => <View style={{ width: 24 }} />}
+          />
+      </View>
+      <View style={{ paddingHorizontal: styles.screenContainer.padding }}>
         <View style={{ height: 42 }} />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={styles.title}>Artikel trending</Text>
@@ -177,13 +216,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Manrope-Bold',
     fontSize: 20,
     color: Colors.textColor,
-    marginBottom: -8,
+    includeFontPadding: false,
   },
   greeting: {
     fontFamily: 'Manrope-Regular',
     fontSize: 16,
     color: Colors.textColor,  
-    marginBottom: -4,
+    includeFontPadding: false,
   },
   notification: {
     alignSelf: 'flex-start',

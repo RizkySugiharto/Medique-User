@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
-import AuthInput from '../components/AuthInput';
+import LabeledInput from '../components/LabeledInput';
 import Button from '../components/Button';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -24,14 +24,14 @@ function CreateNewPasswordScreen(): React.JSX.Element {
       <View style={{height: 4}} />
       <Text style={styles.message} children={'Create your\nnew Password'}/>
       <View style={{height: 32}} />
-      <AuthInput 
+      <LabeledInput 
         value={password}
         setValue={setPassword}
         name='Password :'
         placeholder='12345678'
         secureTextEntry={true} />
       <View style={{height: 26}} />
-      <AuthInput 
+      <LabeledInput 
         value={confirmPassword}
         setValue={setConfirmPassword}
         name='Confrim Password :'

@@ -14,16 +14,21 @@ import Colors  from '../styles/colors';
 interface Props {
   icon: any,
   label: string,
+  activeOpacity?: number,
+  onPress?: () => void,
   buttonStyle?: StyleProp<ViewStyle>,
   iconStyle?: StyleProp<ImageStyle>,
   labelStyle?: StyleProp<TextStyle>
 }
 
-function ButtonWithIcon({ icon, label, buttonStyle, iconStyle, labelStyle }: Props): React.JSX.Element {
+function ButtonWithIcon({ icon, label, activeOpacity, onPress, buttonStyle, iconStyle, labelStyle }: Props): React.JSX.Element {
   return (
-    <TouchableOpacity activeOpacity={0.8} style={[styles.button, buttonStyle]}>
-        <Image source={icon} style={[styles.icon, iconStyle]}/>
-        <Text style={[styles.label, labelStyle]}>{label}</Text>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={activeOpacity ? activeOpacity : 0.8}
+      style={[styles.button, buttonStyle]}>
+      <Image source={icon} style={[styles.icon, iconStyle]}/>
+      <Text style={[styles.label, labelStyle]}>{label}</Text>
     </TouchableOpacity>
   );
 }
