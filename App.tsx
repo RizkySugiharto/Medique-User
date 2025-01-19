@@ -27,6 +27,12 @@ import DoctorDetailsScreen from './screens/DoctorDetailsScreen';
 import OrderDoctorGroup from './screens/groups/OrderDoctorGroup';
 import SessionStorage from 'react-native-session-storage';
 import TrackDoctorScreen from './screens/TrackDoctorScreen';
+import ChatDoctor from './screens/ChatDoctorScreen';
+import DetailPesananDoctor from './screens/DetailConsultationScreen';
+import EditInformasiProfile from './screens/EditInformasiProfilScreen';
+import EditAlamatProfilScreen from './screens/EditAlamatProfilScreen';
+import AllArticleScreen from './screens/AllArticleScreen';
+import ArticleScreen from './screens/ArticleScreen';
 
 Geolocation.setRNConfiguration({
   locationProvider: 'playServices',
@@ -209,12 +215,18 @@ function App(): React.JSX.Element {
       <StatusBar
         barStyle="light-content"/>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Activity' screenOptions={{headerShown: false}}>
+        <Stack.Navigator initialRouteName='Root' screenOptions={{headerShown: false}}>
           <Stack.Screen name='Welcome' component={WelcomeScreen}/>
           <Stack.Screen name='Login' component={LoginScreen}/>
           <Stack.Screen name='ForgotPassword' component={ForgotPasswordGroup}/>
           <Stack.Screen name='CreateNewPassword' component={CreateNewPasswordScreen}/>
+          <Stack.Screen name='AllArticle' component={AllArticleScreen}/>
+          <Stack.Screen name='Article' component={ArticleScreen}/>
           <Stack.Screen name='Activity' component={Activity}/>
+          <Stack.Screen name='Chat' component={ChatDoctor}/>
+          <Stack.Screen name='DetailPesananDoctor' component={DetailPesananDoctor}/>
+          <Stack.Screen name="EditInformasiProfil" component={EditInformasiProfile}/>
+          <Stack.Screen name="EditAlamatProfil" component={EditAlamatProfilScreen}/>
           <Stack.Screen name='PopularDoctor' component={PopularDoctorScreen}/>
           <Stack.Screen name='DoctorCategories' component={DoctorCategoriesScreen}/>
           {/* <Stack.Screen name='DoctorDetails' component={DoctorDetailsScreen}/> */}

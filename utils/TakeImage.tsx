@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Alert, useWindowDimensions } from "react-native";
 import { launchImageLibrary,launchCamera, ImagePickerResponse } from "react-native-image-picker";
-
+import RFNS from 'react-native-fs';
+import DocumentPicker from 'react-native-document-picker';
 
 const TakeImageFromLibrary  = (setImage : React.Dispatch<any>) => {
     const pickFile = async() => {
@@ -51,10 +52,26 @@ const TakePicture  = (setImage : React.Dispatch<any>,isFront : boolean = true) =
     return require('../assets/img/placeholder_user.png');
 }
 
+const TakeDocumentFromLibrary = (setDocuemnt : React.Dispatch<any>) => {
+    const pickFile = async() => {
+        try{
+            const resFile = await DocumentPicker.pickSingle({
+                type : DocumentPicker.types.allFiles,
+            });
+            setDocuemnt(resFile);
+        }catch(err){
+            console.log("err => " + err);
+        }
+    }
+    pickFile();
+}
+
+
 
 const TakeImage ={
     TakeImageFromLibrary,
     TakePicture,
+    TakeDocumentFromLibrary,
 }
 
 export default TakeImage;

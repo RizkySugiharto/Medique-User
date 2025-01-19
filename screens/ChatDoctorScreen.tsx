@@ -1,11 +1,9 @@
 import {Alert, Image, ImageProps, ImageSourcePropType, PermissionsAndroid, Platform, Pressable, ScrollView, SectionList, SectionListScrollParams, StyleSheet, Text,TextInput,useWindowDimensions,View} from 'react-native';
 import Colors, { primary } from '../styles/colors';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import RNFS, { DownloadFileOptions } from 'react-native-fs';
 import React, { createRef, ReactElement, useEffect, useRef, useState } from 'react';
 import DocumentPicker, { DocumentPickerResponse } from 'react-native-document-picker';
-import Button from '../components/Button';
 import TakeImage from '../utils/TakeImage';
 interface InterfaceDataDoctor{
     name : string,
@@ -39,6 +37,7 @@ function Chat(){
     const {params} : RouteProp<{params : {data : InterfaceDataDoctor}},'params'> = useRoute();
     const data = params.data;
     const [messages,setMessages] = useState(data.message);
+    const [document,setDocument] = useState(null);
     const [image,setImage] = useState({uri : ''});
     const layout = useWindowDimensions();
     const crRef = createRef<SectionList>();
@@ -47,6 +46,14 @@ function Chat(){
         if(!image.uri) return;
         createNewMessage(image.uri,"image",setMessages);
     },[image])
+
+    useEffect(() => {
+        if(!document) return;
+        const size = document.size / 1000000;
+        // if(size)
+        console.log(document);
+        createNewMessage(document.uri,document.type,setMessages);
+    },[document])
 
 
     return(
@@ -61,17 +68,17 @@ function Chat(){
                 renderItem={({item}) => <LoadMessage message={item}/>}
                 ListFooterComponent={() => <View style={{height : 100}}></View>}
             />
-           <SendMessageBar setMessages={setMessages} setImage={setImage} image={image}/>
+           <SendMessageBar setMessages={setMessages} setImage={setImage} image={image} setDocument={setDocument}/>
         </View>
     )
 }
 
-function SendMessageBar({setMessages,setImage,image}: { setMessages : React.Dispatch<any>,setImage : React.Dispatch<any>, image : any}){
+function SendMessageBar({setMessages,setImage,image,setDocument}: { setDocument : React.Dispatch<any>,setMessages : React.Dispatch<any>,setImage : React.Dispatch<any>, image : any}){
     const [isFocus,setFocus] = useState(false);
     const [text,setText] = useState("");
     return( 
     <View style={{width:"100%",height: 80,display : "flex",flexDirection : "row",justifyContent : "space-between", alignItems : "center",gap:5,paddingTop : 10,paddingHorizontal : 15,borderTopWidth : .4,position : 'absolute',bottom : 0,left : 0,backgroundColor: Colors.secondary}}>
-        <Pressable onPress={() => TakeImage.TakeImageFromLibrary(setImage)}>
+        <Pressable onPress={() => TakeImage.TakeDocumentFromLibrary(setDocument)}>
             <Image style={{width : 29, height :29}} source={require('../assets/img/ic_attach.png')}/>
         </Pressable>
         <View style={{position : 'relative',paddingHorizontal : 10}}>
@@ -198,9 +205,9 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
                 console.log("err => " + err)
             }
         }
-        async function downloadFile(fromUrl : string){
+        async function downloadFile(fromUrl : string,isImage){
             const randomNumber = Math.ceil(new Date().getTime() * Math.random() * 100 / 92);
-            const toFile = `${RNFS.DocumentDirectoryPath}/images${randomNumber}.png`;
+            const toFile = `${RNFS.DownloadDirectoryPath}/images${randomNumber}${isImage? '.jpg' : '.pdf' }`;
             if(fromUrl.startsWith('data:image')) return base64ToFile(fromUrl,toFile);
             const options : DownloadFileOptions = {
                 fromUrl,
@@ -224,6 +231,7 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
                 RNFS.writeFile(path, base64Data, 'base64')
                   .then(() => {
                     console.log('File berhasil disimpan di:', path);
+                    setDownloaded(true);
                   })
                   .catch(err => {
                     console.error('Gagal menyimpan file:', err);
@@ -234,7 +242,7 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
         }
     }
     return(
-        <View style={{display:"flex",flexDirection : "row",justifyContent : isDoctor? "flex-start" : "flex-end",marginTop : 20,paddingHorizontal : 20}}>
+        message.type === "image"? <View style={{display:"flex",flexDirection : "row",justifyContent : isDoctor? "flex-start" : "flex-end",marginTop : 20,paddingHorizontal : 20}}>
         <Pressable style={{position : 'relative',maxWidth : 280, display : "flex",flexDirection : "row",gap:6}} onPress={() => {
             accessExternalDownload(message.message.uri);
         }}>
@@ -242,19 +250,37 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
             <Text style={{display: downloaded? "flex" : "none", position : 'absolute',bottom : 45, left : 5,color : Colors.textColorWhite,fontSize : 18,fontFamily:'Manrope-Bold'}}>Downloaded</Text>
             <Text style={{position : 'absolute',bottom : 0, right : 5,color : Colors.textColorWhite}}>{message.hour}</Text>
         </Pressable>
+    </View> : 
+    <View style={{flexDirection : "row",justifyContent : isDoctor? "flex-start" : "flex-end",marginTop : 20,paddingHorizontal : 20}}>
+        <Pressable style={{position : 'relative',width : 100,height : 100,gap:6,backgroundColor :Colors.primary,borderRadius:5}} onPress={() => {
+            if(message.message.toString().startsWith('image/')){
+                accessExternalDownload(message.message.toString());
+            }
+        }}>
+            <View style={{
+                padding : 5,
+                alignItems : "center",
+                justifyContent : "center"
+            }}>
+                <Image source={require('../assets/img/ic_document.png')} style={{marginTop : 10,width : 40,height : 40,borderRadius : 8}} />
+                <Text style={{marginTop : 3,color : Colors.textColorWhite,textAlign : "center"}}>{message.type}</Text>
+            </View>
+            <Text style={{display: downloaded? "flex" : "none", position : 'absolute',bottom : 45, left : 5,color : Colors.textColorWhite,fontSize : 18,fontFamily:'Manrope-Bold'}}>Downloaded</Text>
+            <Text style={{position : 'absolute',bottom : 0, right : 5,color : Colors.textColorWhite}}>{message.hour}</Text>
+            <View style={{height : 15}} />
+        </Pressable>
     </View>
     )
 }
 
 function createNewMessage(message : string,type : string,setMessages : React.Dispatch<any>){
-    console.log(message? "ada" : "kosong");
     if(message.length ==0) return;
     const _id = 2321;
     const date = new Date().toLocaleDateString('id-ID');
     const hour = new Date().toLocaleTimeString('id-ID').replace('.',':').split('.')[0];
     const newMessage = {
         _id,
-        message : type !=="text"? {uri : message} : message,
+        message : type !=="image"? message : {uri : message},
         date : date,
         hour : hour,
         type,

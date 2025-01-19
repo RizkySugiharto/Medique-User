@@ -3,9 +3,8 @@ import { Image, ImageProps, Pressable, ScrollView, StyleSheet, Text,TouchableOpa
 import Colors from "../styles/colors";
 import { ReactElement } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import EditInformasiProfil from "./EditInformasiProfilScreen";
 import { useNavigation } from "@react-navigation/native";
-import EditAlamatProfilScreen from "./EditAlamatProfilScreen";
+
 
 const featureProfileScreens = [
     {
@@ -20,12 +19,12 @@ const featureProfileScreens = [
     },
     {
         title : "Bantuan & Dukungan",
-        routeTo : 'BantuanDukunganProfil',
+        routeTo : 'BantuanDukunganProfilScreen',
         icon : require('../assets/img/ic_helper_profile.png')
     },
     {
         title : "Kebijakan privasi",
-        routeTo : 'KebijakanPrivasiProfil',
+        routeTo : 'KebijakanPrivasiProfilScreen',
         icon : require('../assets/img/ic_lock_profile.png')
     },
 ]
@@ -33,14 +32,7 @@ const featureProfileScreens = [
 
 function ProfileScreen(){
     const Stack = createNativeStackNavigator();
-    return(
-        <Stack.Navigator initialRouteName="Dashboard" screenOptions={{headerShown : false}}>
-            <Stack.Screen name="Dashboard" component={Dashboard}/>
-            <Stack.Screen name="EditInformasiProfil" component={EditInformasiProfil}/>
-            <Stack.Screen name="EditAlamatProfil" component={EditAlamatProfilScreen}/>
-            {/* <Stack.Screen name="EditInformasiProfil" component={EditInformasiProfil}/> */}
-        </Stack.Navigator>
-    )
+    return <Dashboard/>
 }
 
 function Dashboard(){

@@ -27,7 +27,7 @@ function HistoryDoctor(){
 const createCardHistory = ({nama : name,image,spesialis,tanggal,jam} : InterfaceTransaksi,index : number) => {
     const navigation = useNavigation();
     return(
-        <Pressable style={{marginTop : 20,display : "flex",flexDirection : "row",alignItems : "center",gap : 20,}} onPress={() => navigation.navigate(...['DetailPesanan',{data : riwayatOrderDoctor[0].data[index]}] as never)}>
+        <Pressable style={{marginTop : 20,display : "flex",flexDirection : "row",alignItems : "center",gap : 20,}} onPress={() => navigation.navigate(...['DetailPesananDoctor',{data : riwayatOrderDoctor[0].data[index]}] as never)}>
             <Image source={image as ImageProps} style={{borderRadius : 16, width : 50,height : 50,}}/>
             <View style={{display:'flex',flexDirection:'column'}}>
                 <View style={{width : "90%", display : "flex",flexDirection:"row",justifyContent : "space-between",alignItems:"center"}}>

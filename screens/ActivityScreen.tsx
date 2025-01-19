@@ -1,15 +1,12 @@
 
-import { ReactElement, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Image, ImageProps, Pressable, SectionList, StyleSheet, Text,TextInput,useWindowDimensions,View } from "react-native";
-import { SearchBar } from "react-native-screens";
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import Colors from "../styles/colors";
 import HistoryTransaksi from "./HistoryConsultationScreen";
-import { Props } from "react-native-confirmation-code-field/esm/CodeField";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-import Chat from "./ChatDoctorScreen";
-import DetailPesanan from "./DetailConsultationScreen";
+import SearchBarW from "../components/SearchBarW";
+import SessionStorage from "react-native-session-storage";
 
 
 
@@ -29,36 +26,43 @@ interface InterfaceTabBarActivity{
     unreadMessages : {name : string,unread : number}[],
 }
 
-const Hero = () => {
+const Hero = ({setMessages} : any) => {
     const [search,setSearch] = useState('');
     const [isFocus,setFocus] = useState(false);
+    // const [messages,setMessages] = useState(JSON.parse(SessionStorage.getItem('dataMessages')))
+    useEffect(() => {
+        if(search.length == 0) return;
+        setMessages(findTitleName(search))
+        function findTitleName(name : string){
+            const article = dataMessages.filter(value => {
+                const hasArticle = value.data.filter(value2 => {
+                    name = name.toLowerCase();
+                    const nameDoctor = value2.name.toLowerCase();
+                    if(
+                        nameDoctor === name ||
+                        nameDoctor.includes(name)
+                    ){
+                        return value2
+                    }
+                });
+                if(hasArticle.length > 0) return value;
+            });
+            console.log(article.length);
+            if(article.length > 0) return article;
+            return dataMessages;
+        }
+    },[search])
+
+
     return(  
     <View style={{marginTop:20,paddingHorizontal : 24}}>
         <Text style={{marginLeft:5,fontSize: 20,fontFamily: 'Manrope-Bold'}}>Halaman Activity</Text>
-        <View style={{width : '100%', marginTop : 20 ,display:"flex",flexDirection:"row",position : "relative"}}>
-            <TextInput
-                id="cari-dokter"
-                style={{...style.searchDoctor, paddingRight : isFocus? 20: 50}}
-                maxLength={30}
-                placeholder="Cari chat dengan dokter..."
-                onChangeText={text => setSearch(text)}
-                onFocus={() => setFocus(true)}
-                onBlur={() => setFocus(false)}
-            />
-            <Image
-                style={{position:"absolute", left : 10, bottom : 10}}
-                source={require('../assets/img/ic_search.png')}
-            />
-            <Image
-                style={isFocus? {display:"none"} : {position:"absolute", right : 15, bottom : 10}}
-                source={require('../assets/img/ic_filter_search.png')}
-            />
-        </View>
-    </View>)
+       <SearchBarW  placeholder="Cari chat dengan dokter..." isFocus={isFocus} setFocus={setFocus} setSearch={setSearch}/>
+    </View>
+    )
 }
 
 function TabBarActivity({index,setIndex,unreadMessages} : InterfaceTabBarActivity){
-   console.log(unreadMessages)
     return(
         <View style={style.ViewRoot}>
             {routes.map((value,routeIndex) => {
@@ -182,7 +186,7 @@ const messageDoctor2 = [
         hour : '14:35',
         date : '16/01/2025',
         type : "text",
-        statusRead : false,
+        statusRead : true,
     },
     {
         _id : 2321,
@@ -218,6 +222,14 @@ const messageDoctor3 = [
         type : "text",
         statusRead : true,
     },
+    {
+        _id : 2323,
+        message : "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        hour : '11:43',
+        date : '10/01/2025',
+        type : "document",
+        statusRead : true,
+    },
 ]
 
 
@@ -226,11 +238,11 @@ const routes = [
     {key : 'second', title:'Histori Pemesanan',unreadMessages :  [{name : "Chat",unread : methodData.totalUnreadMessages([messageDoctor1,messageDoctor2,messageDoctor3])},{name : "Histori Pemesanan",unread : 0}]}
 ]
 
-const style = StyleSheet.create({
+export const style = StyleSheet.create({
     ViewRoot : {
         marginTop : 20,
         width : "105%",
-        height : 50,
+        height : 40,
         display : "flex",
         justifyContent  : "center",
         flexDirection : "row",
@@ -293,7 +305,7 @@ const dataMessages = [
         title : "1 minggu",
         data : [
             {
-                name : "Drs. Raki Devon",
+                name : "Dr Raki Devon",
                 latestMessage : typeof methodData.latestMessage(messageDoctor2)[0].message === "object"? "((image))" : methodData.latestMessage(messageDoctor2)[0].message,
                 latestDate : methodData.latestDate(methodData.latestMessage(messageDoctor2)),
                 totalMessages : messageDoctor2.length,
@@ -307,7 +319,7 @@ const dataMessages = [
         title : "3 minggu",
         data : [
             {
-                name : "Drs. Raki Devon",
+                name : "Dr. Evan",
                 latestMessage :typeof methodData.latestMessage(messageDoctor3)[0].message === "object"? "((image))" : methodData.latestMessage(messageDoctor3)[0].message,
                 latestDate : methodData.latestDate(methodData.latestMessage(messageDoctor3)),
                 totalMessages : messageDoctor3.length,
@@ -319,39 +331,53 @@ const dataMessages = [
     },
 ]
 
+SessionStorage.setItem('dataMessages',JSON.stringify(dataMessages));
 
 
 
-function RootActivity(){
+
+function Activity(){
+    let index3 = 0;
     const layout = useWindowDimensions();
     const [index,setIndex] = useState(0);
+    const [messages,setMessages] = useState(dataMessages);
+    const [currentIndex,setCurrentIndex] = useState(0);
     return(
     <View style={{flex :1}}>
-        <Hero/>
-        <TabView
-            initialLayout={{width : layout.width}}
-            navigationState={{index,routes}}
-            renderScene={renderScene}
-            onIndexChange={setIndex}
-            renderTabBar={() => <TabBarActivity index={index} setIndex={setIndex} unreadMessages={routes[index].unreadMessages}/>}
-        />
-   </View>)
+        <Hero setMessages={setMessages}/>
+        <View style={style.ViewRoot}>
+            {routes.map((value,index) => {
+                return<Pressable 
+                    key={index}
+                    style={isActive()? style.ActivePage : style.UnActivePage}
+                    onPress={() => setCurrentIndex(index)}>
+                    <Text style={isActive()? style.ActiveText : {}}>{value.unreadMessages[index].name}</Text>
+                    <Text style={value.unreadMessages[index].unread > 0? style.HasNotif : {}}>{value.unreadMessages[index].unread > 0? value.unreadMessages[index].unread : '' }</Text>
+                </Pressable>
+                function isActive(){
+                    if(currentIndex === index) return true;
+                    return false;
+                }
+            })}
+        </View>
+        {currentIndex? <HistoryTransaksi/> : 
+            <View style={{flex : 1}}>
+                <SectionList
+                sections={messages}
+                keyExtractor={(item,index) => item.name + index}
+                renderItem={({section : {title},item}) => (
+                    <CreateCardChat name={item.name} latestMessage={item.latestMessage as string} latestDate={item.latestDate} totalUnreadMessages={item.unReadMessages} image={item.image} title={title} indexData={index3++}/>)
+                }
+                ListFooterComponent={() => <View style={{ height: 140 }} />}/>
+            </View>
+        }
+   </View>
+    )
 }
 
 function DashboardActivity(){
     let index = 0;
-    return dataMessages.length == 0? 
-    <NotFoundHistory/> :
-     <View style={{flex : 1}}>
-        <SectionList
-        sections={dataMessages}
-        keyExtractor={(item,index) => item.name + index}
-        renderItem={({section : {title},item}) => (
-            <CreateCardChat name={item.name} latestMessage={item.latestMessage as string} latestDate={item.latestDate} totalUnreadMessages={item.unReadMessages} image={item.image} title={title} indexData={index++}/>)
-        }
-        ListFooterComponent={() => <View style={{ height: 140 }} />}/>
-
-    </View>
+    return <View/>;
 }
 
 function NotFoundHistory(){
@@ -369,18 +395,7 @@ function NotFoundHistory(){
 }
 
 
-function Activity(){
-    const layout = useWindowDimensions();
-    const [index,setIndex] = useState(0);
-    const Stack = createNativeStackNavigator();
-    return(
-       <Stack.Navigator screenOptions={{headerShown:false}}>
-            <Stack.Screen name="RootActivity" component={RootActivity}/>
-            <Stack.Screen name="Chat" component={Chat} options={{headerShown : false}}/>
-            <Stack.Screen name="DetailPesanan" component={DetailPesanan} options={{headerShown : false}}/>
-       </Stack.Navigator>
-    )
-}
+
 
 
 
