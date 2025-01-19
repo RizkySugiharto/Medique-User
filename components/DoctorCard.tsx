@@ -10,6 +10,8 @@ import {
 import Colors  from '../styles/colors';
 import { Rating } from '@kolking/react-native-rating';
 import { useNavigation } from '@react-navigation/native';
+import Modal from "react-native-modal";
+import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
 
 interface Props {
   data: {
@@ -25,15 +27,85 @@ interface Props {
 function DoctorCard({ data }: Props): React.JSX.Element {
   const window = useWindowDimensions()
   const navigation = useNavigation();
-  const profileSize = ( ( window.width - 24 * 2) - 11 ) / 2
+  const profileSize = ( ( window.width - 24 * 2) - 16 ) / 2
   const [favorite, setFavorite] = useState(data.favorite);
+  const [favoriteVerify, setFavoriteVerify] = useState(false);
   const handleFavorite = () => {
+    if (data.favorite) {
+      setFavoriteVerify(true)
+    } else {
+      toggleFavorite()
+    }
+  }
+  const toggleFavorite = () => {
     data.favorite = !data.favorite
-    console.log(data.favorite)
     setFavorite(data.favorite)
   }
 
   return (
+    <>
+    <View>
+      <Modal
+        animationIn='shake'
+        animationOut='slideOutDown'
+        useNativeDriver={true}
+        useNativeDriverForBackdrop={true}
+        isVisible={favoriteVerify}>
+        <ShadowedView
+          style={shadowStyle({
+            opacity: 1,
+            offset: [0, 4],
+            radius: 20,
+            color: 'rgba(0, 0, 0, 0.25)',
+          })}>
+          <View style={{
+            borderColor: Colors.textColorSecondary,
+            borderWidth: 1,
+            borderRadius: 14,
+            backgroundColor: Colors.secondary,
+          }}>
+            <Text style={{
+              fontFamily: 'Manrope-SemiBold',
+              fontSize: 18,
+              textAlign: 'center',
+              color: 'rgb(0, 0, 0)',
+              paddingVertical: 16,
+              paddingHorizontal: 20
+            }}>kamu yakin hapus {data.name} dari favorit?</Text>
+            <TouchableOpacity
+              onPress={() => {
+                toggleFavorite()
+                setFavoriteVerify(false)
+              }}
+              style={{
+                borderColor: Colors.primaryShadow,
+                borderTopWidth: 1,
+                borderBottomWidth: 1,
+                paddingVertical: 12,
+              }}
+              activeOpacity={0.6}>
+              <Text style={{
+                fontFamily: 'Manrope-SemiBold',
+                fontSize: 18,
+                textAlign: 'center',
+                color: 'rgb(255, 0, 0)',
+              }}>Ya, hapus</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setFavoriteVerify(false)}
+              activeOpacity={0.6}
+              style={{ paddingVertical: 12 }}>
+              <Text style={{
+                fontFamily: 'Manrope-Regular',
+                fontSize: 18,
+                textAlign: 'center',
+                color: Colors.primary,
+              }}>Tidak</Text>
+            </TouchableOpacity>
+          </View>
+        </ShadowedView>
+      </Modal>
+    </View>
     <TouchableOpacity
       onPress={() => navigation.navigate('DoctorDetails' as never)}
       activeOpacity={0.8}
@@ -78,6 +150,7 @@ function DoctorCard({ data }: Props): React.JSX.Element {
         </View>
       </View>
     </TouchableOpacity>
+    </>
   );
 }
 

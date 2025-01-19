@@ -9,7 +9,7 @@ import {
   FlatList,
   useWindowDimensions
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import StepsHeaderBar from '../components/StepsHeaderBar';
 import Button from '../components/Button';
@@ -41,6 +41,22 @@ function OrderDoctorThirdStepByMapScreen(): React.JSX.Element {
   const carouselSliderHeightPaddingVertical = 26;
   const carouselSliderHeight = carouselItemHeight + carouselSliderHeightPaddingVertical * 2;
   const currentCarousel = createRef<Carousel<NearbyPlaceData>>();
+  const selectPlace = (place: NearbyPlaceData) => {
+    setSelected(place)
+    map.current?.setCamera({
+      center: {
+        latitude: place.location.lat,
+        longitude: place.location.lng
+      },
+      pitch: 1,
+      zoom: 20,
+      heading: 1,
+    })
+  }
+
+  useFocusEffect(() => {
+    map.current?.forceUpdate()
+  })
   
   return (
     <View style={styles.screenContainer}>
@@ -62,12 +78,24 @@ function OrderDoctorThirdStepByMapScreen(): React.JSX.Element {
         }}
         style={styles.map}
         >
+        { places.map(( value, index ) => (
+          <Marker
+            key={'Place-' + index}
+            coordinate={{
+              latitude: value.location.lat,
+              longitude: value.location.lng
+            }}
+            onPress={() => {
+              currentCarousel.current?.snapToItem(index, true, true, false, true)
+            }}
+            icon={require('../assets/img/ic_map_marker.png')}/>
+        )) }
         <Marker
           coordinate={{
             latitude: currentLoc.lat,
             longitude: currentLoc.lng
           }}
-          icon={require('../assets/img/ic_map_marker.png')}/>
+          icon={require('../assets/img/ic_current_location.png')}/>
       </MapView>
       <View style={{ flex: 1, justifyContent: 'space-between' }}>
         <StepsHeaderBar
@@ -108,12 +136,12 @@ function OrderDoctorThirdStepByMapScreen(): React.JSX.Element {
               inactiveSlideOpacity={0.35}
               enableSnap={true}
               enableMomentum={false}
-              onBeforeSnapToItem={(index) => setSelected(places[index])}
+              onBeforeSnapToItem={(index) => selectPlace(places[index])}
               decelerationRate='fast'
               onScrollEndDrag={(event) => {
                 const offsetY = event.nativeEvent.contentOffset.y
                 const newIndex = Math.round(offsetY / carouselItemHeight)
-                setSelected(places[newIndex])
+                selectPlace(places[newIndex])
                 if (currentCarousel.current) {
                   currentCarousel.current.snapToItem(newIndex, true)
                 }

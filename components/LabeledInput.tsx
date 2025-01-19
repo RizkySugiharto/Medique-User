@@ -7,6 +7,8 @@ import {
   StyleProp,
   TextStyle,
   ViewStyle,
+  InputModeOptions,
+  ColorValue,
 } from 'react-native';
 import Colors  from '../styles/colors';
 
@@ -15,9 +17,11 @@ interface Props {
   setValue?: React.Dispatch<React.SetStateAction<string>>,
   name?: string,
   placeholder?: string,
+  placeholderTextColor?: ColorValue,
   multiline?: boolean,
   numberOfLines?: number,
   secureTextEntry?: boolean | false,
+  inputMode?: InputModeOptions,
   readOnly?: boolean,
   containerStyle?: StyleProp<ViewStyle>,
   labelStyle?: StyleProp<TextStyle>,
@@ -32,7 +36,9 @@ function LabeledInput({
   setValue,
   name,
   placeholder,
+  placeholderTextColor,
   secureTextEntry,
+  inputMode,
   readOnly,
   multiline,
   numberOfLines,
@@ -59,9 +65,10 @@ function LabeledInput({
           readOnly={readOnly}
           textAlignVertical='top'
           onChangeText={setValue}
-          placeholderTextColor='rgba(0, 0, 0, 0.5)'
+          placeholderTextColor={placeholderTextColor || 'rgba(0, 0, 0, 0.5)'}
           placeholder={placeholder}
           secureTextEntry={secureTextEntry}
+          inputMode={inputMode}
           style={[styles.input, inputStyle]}/>
         {renderRight && renderRight()}
       </View>

@@ -26,7 +26,7 @@ const doctorData = {
 
 function PopularDoctorScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const categories = SessionStorage.getItem('@categories')?.split(0, 4)
+  const categories = SessionStorage.getItem('@categories')?.slice(0, 4)
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<number>(0);
 
@@ -110,4 +110,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PopularDoctorScreen;
+export default React.memo(PopularDoctorScreen);

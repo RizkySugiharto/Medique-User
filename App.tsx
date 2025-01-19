@@ -26,6 +26,9 @@ import DoctorDetailsScreen from './screens/DoctorDetailsScreen';
 import OrderDoctorGroup from './screens/groups/OrderDoctorGroup';
 import SessionStorage from 'react-native-session-storage';
 import TrackDoctorScreen from './screens/TrackDoctorScreen';
+import OrderAmbulanceGroup from './screens/groups/OrderAmbulanceGroup';
+import RegisterScreen from './screens/RegisterScreen';
+import LoadingScreen from './screens/LoadingScreen';
 
 Geolocation.setRNConfiguration({
   locationProvider: 'playServices',
@@ -33,6 +36,62 @@ Geolocation.setRNConfiguration({
 })
 
 function loadPublicSampleData() {
+  SessionStorage.setItem('@favorited_doctors', [
+    {
+      id: 1,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Sumanto',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
+    },
+    {
+      id: 2,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Evan',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
+    },
+    {
+      id: 3,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Evan',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
+    },
+    {
+      id: 4,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Sumanto',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
+    },
+    {
+      id: 5,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Evan',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
+    },
+    {
+      id: 6,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Sumanto',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
+    },
+  ]),
   SessionStorage.setItem('@categories', [
     {
       icon: require('./assets/img/ic_pediatrician_specialist.png'),
@@ -67,7 +126,7 @@ function loadPublicSampleData() {
       name: 'Dokter Spesialis Penyakit Dalam',
     },
   ])
-  SessionStorage.setItem('@bookmarked_places_a', [
+  SessionStorage.setItem('@bookmarked_places', [
     {
       id: '1',
       name: 'Jombang',
@@ -151,8 +210,8 @@ function loadPublicSampleData() {
       name: 'Jl. priview jalan seperti di tiitk',
       address: 'Jl. priview jalan seperti di titik lebih detail',
       location: {
-        lat: -6,
-        lng: 107,
+        lat: -6.300894,
+        lng: 106.702669
       },
     },
     {
@@ -160,8 +219,8 @@ function loadPublicSampleData() {
       name: 'Jl. priview jalan seperti di tiitk',
       address: 'Jl. priview jalan seperti di titik lebih detail',
       location: {
-        lat: -6,
-        lng: 106,
+        lat: -6.301094,
+        lng: 106.703069
       },
     },
   {
@@ -169,8 +228,8 @@ function loadPublicSampleData() {
       name: 'Jl. priview jalan seperti di tiitk',
       address: 'Jl. priview jalan seperti di titik lebih detail',
       location: {
-        lat: -5,
-        lng: 106,
+        lat: -6.300694,
+        lng: 106.703069,
       },
     },
   ])
@@ -196,7 +255,63 @@ function loadPublicSampleData() {
       start: 300_000,
       end: 500_000
     }
-  })
+  }),
+  SessionStorage.setItem('@nearby_ambulances', [
+    {
+      id: 1,
+      name: 'RS Puspita',
+      price: 30_000,
+      address: 'Jalan Serua Indah, Pamulang',
+      location: {
+        lat: -6.300894,
+        lng: 106.702669
+      },
+    },
+    {
+      id: 2,
+      name: 'RS Puspita',
+      price: 30_000,
+      address: 'Jalan Serua Indah, Pamulang',
+      location: {
+        lat: -6.300694,
+        lng: 106.703069,
+      },
+    },
+    {
+      id: 3,
+      name: 'RS Puspita',
+      price: 30_000,
+      address: 'Jalan Serua Indah, Pamulang',
+      location: {
+        lat: -6.301094,
+        lng: 106.703069
+      },
+    },
+    {
+      id: 4,
+      name: 'RS Puspita',
+      price: 30_000,
+      address: 'Jalan Serua Indah, Pamulang',
+      location: {
+        lat: -6.300394,
+        lng: 106.702069
+      },
+    },
+    {
+      id: 5,
+      name: 'RS Puspita',
+      price: 30_000,
+      address: 'Jalan Serua Indah, Pamulang',
+      location: {
+        lat: -6.300094,
+        lng: 106.701869
+      },
+    },
+  ])
+}
+
+function loadRequiredSessionData() {
+  SessionStorage.setItem('@loading_status', false)
 }
 
 function App(): React.JSX.Element {
@@ -208,9 +323,11 @@ function App(): React.JSX.Element {
       <StatusBar
         barStyle="light-content"/>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Root' screenOptions={{headerShown: false}}>
+        <Stack.Navigator initialRouteName='Loading' screenOptions={{headerShown: false}}>
+          <Stack.Screen name='Loading' component={LoadingScreen}/>
           <Stack.Screen name='Welcome' component={WelcomeScreen}/>
           <Stack.Screen name='Login' component={LoginScreen}/>
+          <Stack.Screen name='Register' component={RegisterScreen}/>
           <Stack.Screen name='ForgotPassword' component={ForgotPasswordGroup}/>
           <Stack.Screen name='CreateNewPassword' component={CreateNewPasswordScreen}/>
           <Stack.Screen name='PopularDoctor' component={PopularDoctorScreen}/>
@@ -219,6 +336,7 @@ function App(): React.JSX.Element {
           <Stack.Screen name='Root' component={RootGroup}/>
           <Stack.Screen name='OrderDoctor' component={OrderDoctorGroup}/>
           <Stack.Screen name='TrackDoctor' component={TrackDoctorScreen}/>
+          <Stack.Screen name='OrderAmbulance' component={OrderAmbulanceGroup}/>
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

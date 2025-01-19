@@ -3,16 +3,14 @@ import {
   StyleSheet,
   View,
   Image,
-  ScrollView,
   Text,
   TouchableOpacity,
-  FlatList
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import Button from '../components/Button';
 import StackHeaderBar from '../components/StackHeaderBar';
-import MapView, { Circle, Marker } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
 import SessionStorage from 'react-native-session-storage';
 import utils from '../utils';

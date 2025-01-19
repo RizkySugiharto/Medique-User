@@ -4,10 +4,10 @@ import { Animated, Image, StyleSheet, TouchableOpacity, View } from 'react-nativ
 import Colors from '../../styles/colors';
 import HomeScreen from '../HomeScreen';
 import SessionStorage from 'react-native-session-storage';
+import FavoriteScreen from '../FavoriteScreen';
 
 function TabBar({ state, descriptors, navigation}: BottomTabBarProps) {
   const navbarStatusView = SessionStorage.getItem('@navbar_status_view')
-  console.log(navbarStatusView)
 
   return (
     <>
@@ -90,7 +90,7 @@ export default (): React.JSX.Element => {
       tabBar={(props) => <TabBar {...props} />}
       screenOptions={{ headerShown: false }}>
       <Tab.Screen name='Home' component={HomeScreen}/>
-      <Tab.Screen name='Favorite' component={HomeScreen}/>
+      <Tab.Screen name='Favorite' component={FavoriteScreen}/>
       <Tab.Screen name='Activity' component={HomeScreen}/>
       <Tab.Screen name='Profile' component={HomeScreen}/>
     </Tab.Navigator>

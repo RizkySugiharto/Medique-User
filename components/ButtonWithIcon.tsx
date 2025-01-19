@@ -14,6 +14,7 @@ import Colors  from '../styles/colors';
 interface Props {
   icon: any,
   label: string,
+  iconPosition?: 'left' | 'right',
   activeOpacity?: number,
   onPress?: () => void,
   buttonStyle?: StyleProp<ViewStyle>,
@@ -21,14 +22,30 @@ interface Props {
   labelStyle?: StyleProp<TextStyle>
 }
 
-function ButtonWithIcon({ icon, label, activeOpacity, onPress, buttonStyle, iconStyle, labelStyle }: Props): React.JSX.Element {
+function ButtonWithIcon({ icon, label, iconPosition, activeOpacity, onPress, buttonStyle, iconStyle, labelStyle }: Props): React.JSX.Element {
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={activeOpacity ? activeOpacity : 0.8}
       style={[styles.button, buttonStyle]}>
-      <Image source={icon} style={[styles.icon, iconStyle]}/>
-      <Text style={[styles.label, labelStyle]}>{label}</Text>
+      { !iconPosition &&
+        <>
+        <Image source={icon} style={[styles.icon, iconStyle]}/>
+        <Text style={[styles.label, labelStyle]}>{label}</Text>
+        </>
+      }
+      { iconPosition === 'left' &&
+        <>
+        <Image source={icon} style={[styles.icon, iconStyle]}/>
+        <Text style={[styles.label, labelStyle]}>{label}</Text>
+        </>
+      }
+      { iconPosition === 'right' &&
+        <>
+        <Image source={icon} style={[styles.icon, iconStyle]}/>
+        <Text style={[styles.label, labelStyle]}>{label}</Text>
+        </>
+      }
     </TouchableOpacity>
   );
 }

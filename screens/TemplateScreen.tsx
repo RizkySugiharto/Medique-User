@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
     padding: 24,
-    backgroundColor: Colors.bodyColor
+    backgroundColor: Colors.secondary,
   },
 });
 

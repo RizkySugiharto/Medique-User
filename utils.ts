@@ -33,12 +33,6 @@ function shortNumber(value: number): string {
 }
 
 function calculateAge(birthDate: Date): number {
-    console.log(subtractDate(
-      new Date(Date.now()),
-      {
-        years: birthDate.getFullYear()
-      }
-    ).getFullYear())
     return subtractDate(
       new Date(Date.now()),
       {
