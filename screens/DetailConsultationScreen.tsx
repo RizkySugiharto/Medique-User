@@ -1,6 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import {Image, ImageProps, ScrollView, SectionList, StyleSheet, Text,View} from 'react-native';
-import Colors from '../../../styles/colors';
+import Colors from '../styles/colors';
 import { PropsWithChildren, ReactElement } from 'react';
 import Back from '../components/Back';
 
@@ -29,10 +29,14 @@ interface InterFacePasien{
     jenis_kelamin : number, // it's mean girl/female    
 }
 
+type Props = {
+    title : string | null,
+    children: string | JSX.Element | JSX.Element[] | any,
+}
+
 function DetailPesanan(){
     const {params} : RouteProp<{params : {data :ParamsProp }}> = useRoute();
     const data = params.data;
-    console.log(data.transaksi.transaksi.listJasa);
     return(
         <ScrollView>
             <Back/>
@@ -45,10 +49,7 @@ function DetailPesanan(){
     )
 }
 
-type Props = {
-    title : string | null,
-    children: string | JSX.Element | JSX.Element[] | any,
-}
+
 
 const Container = ({title = null,children} : Props) : ReactElement =>{
     return(
@@ -67,12 +68,12 @@ const Penyakit = ({penyakit,tindakan} :{penyakit : string[],tindakan : string[]}
         <Container title="Penyakit & Tindakan Dokter">
             <View style={styles.containerBox}>
                 <Text style={{marginBottom : 5,fontFamily : "Manrope-SemiBold",fontSize : 16}}>Penyakit : </Text>
-               {penyakit.map((value,index) =>  <Text style={{fontFamily : "Manrope-Reguler",fontSize : 16}}>{value}</Text>)}
+               {penyakit.map((value,index) =>  <Text style={{fontFamily : "Manrope-Reguler",fontSize : 16}} key={index}>{value}</Text>)}
             </View>
             <LineBreak/>
             <View style={styles.containerBox}>
                 <Text style={{marginBottom : 5,fontFamily : "Manrope-SemiBold",fontSize : 16}}>Tindakan : </Text>
-                {tindakan.map((value,index) => <Text style={{fontFamily : "Manrope-Reguler",fontSize : 16}}>{value}</Text>)}
+                {tindakan.map((value,index) => <Text style={{fontFamily : "Manrope-Reguler",fontSize : 16}} key={index}>{value}</Text>)}
             </View>
         </Container>
     )
@@ -102,7 +103,6 @@ function DetailPembayaran({product} : {product : {nama : string,harga : number}[
 const LineBreak = () => <View style={{borderWidth : .6,borderColor : Colors.primary}}/>
 
 function InformasiPasien({pasien} : {pasien : InterFacePasien}){
-    console.log(pasien);
     return(
         <Container title='Informasi Pasien'>
             <View style={styles.containerBox}>
@@ -116,7 +116,7 @@ function Payment({transaksi} :{transaksi : {listJasa : any,bayar : string}}){
     return(
         <Container title='Bayar Menggunakan'>
             <View style={{...styles.containerBox,flexDirection : "row",alignItems : "center",gap :18,}}>
-                <Image source={require('../../../assets/img/ic_cash.png')}/>
+                <Image source={require('../assets/img/ic_cash.png')}/>
                 <Text style={{fontFamily : "Manrope-Reguler",fontSize : 16}}>{transaksi.bayar}</Text>
             </View>
         </Container>
@@ -138,6 +138,8 @@ function Footer({data} : {data : ParamsProp}){
         </View>
     )
 }
+
+
 
 const numberToCurrency = new Intl.NumberFormat('id-ID',{
     style : "currency",

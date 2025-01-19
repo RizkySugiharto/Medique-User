@@ -22,7 +22,7 @@ import CreateNewPasswordScreen from './screens/CreateNewPasswordScreen';
 import RootGroup from './screens/groups/RootGroup';
 import PopularDoctorScreen from './screens/PopularDoctorScreen';
 import DoctorCategoriesScreen from './screens/DoctorCategoriesScreen';
-import Activity from './screens/activity';
+import Activity from './screens/ActivityScreen';
 import DoctorDetailsScreen from './screens/DoctorDetailsScreen';
 import OrderDoctorGroup from './screens/groups/OrderDoctorGroup';
 import SessionStorage from 'react-native-session-storage';
@@ -209,7 +209,7 @@ function App(): React.JSX.Element {
       <StatusBar
         barStyle="light-content"/>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Root' screenOptions={{headerShown: false}}>
+        <Stack.Navigator initialRouteName='Activity' screenOptions={{headerShown: false}}>
           <Stack.Screen name='Welcome' component={WelcomeScreen}/>
           <Stack.Screen name='Login' component={LoginScreen}/>
           <Stack.Screen name='ForgotPassword' component={ForgotPasswordGroup}/>
