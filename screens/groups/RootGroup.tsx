@@ -3,10 +3,12 @@ import { BottomTabBarProps, createBottomTabNavigator } from '@react-navigation/b
 import { Animated, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Colors from '../../styles/colors';
 import HomeScreen from '../HomeScreen';
+import ActivityScreen from '../ActivityScreen';
 import SessionStorage from 'react-native-session-storage';
 import FavoriteScreen from '../FavoriteScreen';
 import AboutScreen from '../AboutScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ProfileScreen from '../ProfileScreen';
 
 function TabBar({ state, descriptors, navigation}: BottomTabBarProps) {
   const navbarStatusView = SessionStorage.getItem('@navbar_status_view')

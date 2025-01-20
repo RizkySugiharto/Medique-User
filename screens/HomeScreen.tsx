@@ -133,7 +133,7 @@ function HomeScreen(): React.JSX.Element {
         <View style={{ height: 42 }} />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={styles.title}>Artikel trending</Text>
-          <TouchableOpacity activeOpacity={0.75}>
+          <TouchableOpacity activeOpacity={0.75} onPress={() => navigation.navigate(...['AllArticle',{articles}] as never)}>
             <Text style={styles.seeAll}>Lihat semua</Text>
           </TouchableOpacity>
         </View>
@@ -145,7 +145,9 @@ function HomeScreen(): React.JSX.Element {
           <TouchableOpacity
             key={index}
             activeOpacity={0.8}
-            style={styles.articleCard}>
+            style={styles.articleCard}
+            onPress={() => navigation.navigate(...['Article',{article : item}] as never)}
+            >
             <Image source={item.image} style={styles.articleImage}/>
             <View style={{ height: 12 }} />
             <Text style={styles.articleCategory}>{item.category}</Text>
