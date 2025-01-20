@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
-  Image,
   Text,
   TouchableOpacity,
-  FlatList
+  FlatList,
+  ScrollView,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
@@ -14,19 +14,14 @@ import SearchBar from '../components/SearchBar';
 import DoctorCard from '../components/DoctorCard';
 import StackHeaderBar from '../components/StackHeaderBar';
 import SessionStorage from 'react-native-session-storage';
+import { CategoryData, DoctorData } from '../types';
+import { FlatGrid } from 'react-native-super-grid';
 
-const doctorData = {
-  profile: require('../assets/img/placeholder_doctor.png'),
-  name: 'Dr. Abdul',
-  category: 'Dokter Umum',
-  favorite: false,
-  rating: 4.8,
-  experience: 8
-}
 
 function PopularDoctorScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const categories = SessionStorage.getItem('@categories')?.slice(0, 4)
+  const categories: CategoryData[] = SessionStorage.getItem('@categories')?.slice(0, 4)
+  const [doctors, setDoctors] = useState<DoctorData[]>(SessionStorage.getItem('@doctors'))
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<number>(0);
 
@@ -42,12 +37,15 @@ function PopularDoctorScreen(): React.JSX.Element {
   }
 
   return (
-    <View style={[styles.screenContainer, { padding: 0 }]}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={[styles.screenContainer, { padding: 0 }]}>
       <StackHeaderBar
         label='Doktor Populer'
-        containerStyle={{ padding: 24 }}
+        notificationEnabled={true}
+        rootStyle={{ padding: 24 }}
         labelStyle={{ marginLeft: 8, fontFamily: 'Manrope-Bold' }} />
-      <View style={{ height: 54 }} />
+      <View style={{ height: 24 }} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: styles.screenContainer.padding }}>
         <Text style={styles.title}>Kategori dokter</Text>
         <TouchableOpacity
@@ -75,25 +73,36 @@ function PopularDoctorScreen(): React.JSX.Element {
           />
       </View>
       <View style={{ height: 38 }} />
-      <View style={{ paddingHorizontal: styles.screenContainer.padding }}>
+      <View style={{ flex: 1, paddingHorizontal: styles.screenContainer.padding }}>
         <SearchBar
           placeholder='Cari nama dokter...'
           value={search}
           onChangeText={setSearch} />
         <View style={{ height: 38 }} />
-        <View style={{ flexDirection: 'row' }}>
-          <DoctorCard data={doctorData} />
-          <View style={{ width: 22 }} />
-          <DoctorCard data={doctorData} />
-        </View>
+        <FlatGrid
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
+          data={doctors
+            .filter((value, index) => value.category === categories[selected].name)
+            .filter((value, index) => value.name.toLowerCase().includes(search))
+          }
+          renderItem={({ item, index }) => (
+            <DoctorCard key={item.id + index} data={item} />
+          )}
+          itemContainerStyle={{ marginRight: 0, justifyContent: 'flex-start' }}
+          additionalRowStyle={{
+            justifyContent: 'space-between',
+            paddingLeft: 0,
+            paddingBottom: 20,
+          }}/>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   screenContainer: {
-    flex: 1,
+    flexGrow: 1,
     padding: 24,
     backgroundColor: Colors.secondary,
   },

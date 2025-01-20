@@ -10,20 +10,28 @@ import {
   useWindowDimensions,
   ScrollView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import LabeledInput from '../components/LabeledInput';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 import Button from '../components/Button';
 import ButtonWithIcon from '../components/ButtonWithIcon';
+import SessionStorage from 'react-native-session-storage';
 
 function LoginScreen(): React.JSX.Element {
   const window = useWindowDimensions();
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [requireds, setRequireds] = useState<number[]>([])
   const columnGap = 6
   const authButtonWidth = (window.width - styles.screenContainer.padding * 2 ) / 2 - columnGap
+
+  useFocusEffect(() => {
+    if (SessionStorage.getItem('@logged_in')) {
+      navigation.navigate(...['Root', { screen: 'Home' }] as never)
+    }
+  })
 
   return (
     <KeyboardAwareScrollView
@@ -44,12 +52,15 @@ function LoginScreen(): React.JSX.Element {
             setValue={setEmail}
             name='Email :'
             placeholder='Example@gmail.com'/>
+          { requireds.includes(0) && <Text style={styles.required}>Harus di isi!</Text> }
           <View style={{height: 20}}/>
           <LabeledInput
             value={password}
             setValue={setPassword}
             name='Password :'
-            placeholder='Password'/>
+            placeholder='Password'
+            secureTextEntry={true}/>
+          { requireds.includes(1) && <Text style={styles.required}>Harus di isi!</Text> }
         </View>
         <View style={{ height: 26 }} />
         <Text style={[styles.normalText, { color: Colors.primary, textAlign: 'center' }]}>atau masuk dengan</Text>
@@ -86,7 +97,22 @@ function LoginScreen(): React.JSX.Element {
             </Text>
           </TouchableOpacity>
         </View>
-        <Button label='Masuk'/>
+        <Button
+          label='Masuk'
+          onPress={() => {
+            const newRequireds = []
+            let i = 0;
+            for (const field of [email, password]) {
+              if (!email) newRequireds.push(i)
+              i++
+            }
+            setRequireds(newRequireds)
+
+            if (newRequireds.length <= 0) {
+              SessionStorage.setItem('@logged_in', true)
+              navigation.navigate(...['Root', { screen: 'Home' }] as never)
+            }
+          }}/>
       </KeyboardAwareScrollView>
   );
 }
@@ -126,7 +152,14 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0, 0, 0, 0.2)',
     borderWidth: 1.5,
     borderRadius: 40
-  }
+  },
+  required: {
+    fontFamily: 'Manrope-Regular',
+    fontSize: 14,
+    color: Colors.primary,
+    includeFontPadding: false,
+    marginTop: 2,
+  },
 });
 
 export default React.memo(LoginScreen);

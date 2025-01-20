@@ -5,6 +5,7 @@ import {
   Image,
   ScrollView,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
@@ -14,37 +15,15 @@ import Button from '../components/Button';
 import LabeledInput from '../components/LabeledInput';
 import utils from '../utils';
 import SessionStorage from 'react-native-session-storage';
-
-interface UserData {
-  name: string,
-  gender: 'Laki-Laki' | 'Perempuan',
-  birthDate: Date,
-}
-
-interface DoctorData {
-  profile: any,
-  name: string,
-  category: string,
-  startPrice: number,
-}
+import { DoctorData, UserData } from '../types';
+import MethodPaymentSelector from '../components/MethodPaymentSelector';
 
 function getUserData(): UserData {
-  const data = SessionStorage.getItem('@user_data')
-  return {
-    name: data.name,
-    gender: data.gender,
-    birthDate: data.birthDate
-  }
+  return SessionStorage.getItem('@user_data')
 }
 
 function getDoctorData(): DoctorData {
-  const data = SessionStorage.getItem('@selected_doctor')
-  return {
-    profile: data.profile,
-    name: data.name,
-    category: data.category,
-    startPrice: data.price.start,
-  }
+  return SessionStorage.getItem('@selected_doctor')
 }
 
 function OrderDoctorFifthStepScreen(): React.JSX.Element {
@@ -90,7 +69,11 @@ function OrderDoctorFifthStepScreen(): React.JSX.Element {
               <Text style={styles.boldText}>{doctorData.name}</Text>
               <Text style={styles.semiboldText}>{doctorData.category}</Text>
               <View style={{ height: 10 }} />
-              <Text style={styles.linkText}>Lihat profil lengkap</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate(...['DoctorDetails', doctorData] as never)}
+                activeOpacity={(0.6)}>
+                <Text style={styles.linkText}>Lihat profil lengkap</Text>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={{ height: 32 }} />
@@ -99,6 +82,8 @@ function OrderDoctorFifthStepScreen(): React.JSX.Element {
             value={`${numFormat.format(totalPrice)} Rupiah`}
             readOnly={true}
             labelStyle={styles.semiboldText}/>
+          <View style={{ height: 16 }} />
+          <MethodPaymentSelector />
         </View>
       </ScrollView>
       <Button

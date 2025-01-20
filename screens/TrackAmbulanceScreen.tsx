@@ -143,12 +143,41 @@ function TrackAmbulanceScreen(): React.JSX.Element {
   const handleChat = () => {
     navigation.navigate(...['Chat', { accountId: ambulanceData.id }] as never)
   }
+  const onMapDisplay = () => {
+    map.current?.setState({ isReady: true })
+    map.current?.setCamera({
+      center: {
+        latitude: ambulanceData.location.lat,
+        longitude: ambulanceData.location.lng
+      },
+      pitch: 1,
+      zoom: 20,
+      heading: 1,
+    })
+  }
   
   useEffect(() => {
-    if (status === 'finished') {
-      SessionStorage.setItem('@selected_ambulance', undefined)
-      SessionStorage.setItem('@selected_ambulance_track', undefined)
-      navigation.navigate(...['OrderAmbulance', { screen: 'OrderAmbulanceFinished' }] as never)
+    if (status === 'on-the-way') {
+      const timeout = setTimeout(() => {
+        ambulanceTrack.status = 'has-arrived';
+        setStatus(ambulanceTrack.status)
+        clearTimeout(timeout)
+      }, 5000 * 1)
+    } else if (status === 'has-arrived') {
+      const timeout = setTimeout(() => {
+        ambulanceTrack.status = 'to-the-hospital';
+        setStatus(ambulanceTrack.status)
+        clearTimeout(timeout)
+      }, 5000 * 1)
+    } else if (status === 'to-the-hospital') {
+      const timeout = setTimeout(() => {
+        ambulanceTrack.status = 'finished';
+        setStatus(ambulanceTrack.status)
+        clearTimeout(timeout)
+      }, 5000 * 1)
+    } else if (status === 'finished') {
+      SessionStorage.setItem('@navbar_status_view', undefined)
+      navigation.navigate(...['OrderAmbulance', { screen: 'OrderAmbulanceFinished' }] as never) 
     }
   }, [status])
 
@@ -165,17 +194,8 @@ function TrackAmbulanceScreen(): React.JSX.Element {
         ref={map}
         zoomEnabled={true}
         rotateEnabled={true}
-        onMapLoaded={() => {
-          map.current?.setCamera({
-            center: {
-              latitude: ambulanceData.location.lat,
-              longitude: ambulanceData.location.lng
-            },
-            pitch: 1,
-            zoom: 20,
-            heading: 1,
-          })
-        }}
+        onMapLoaded={onMapDisplay}
+        onLayout={onMapDisplay}
         style={styles.map}>
         <Marker
           coordinate={{

@@ -5,6 +5,8 @@ import Colors from '../../styles/colors';
 import HomeScreen from '../HomeScreen';
 import SessionStorage from 'react-native-session-storage';
 import FavoriteScreen from '../FavoriteScreen';
+import AboutScreen from '../AboutScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 function TabBar({ state, descriptors, navigation}: BottomTabBarProps) {
   const navbarStatusView = SessionStorage.getItem('@navbar_status_view')
@@ -84,12 +86,22 @@ function TabBar({ state, descriptors, navigation}: BottomTabBarProps) {
 
 export default (): React.JSX.Element => {
   const Tab = createBottomTabNavigator();
+  const HomeStack = createNativeStackNavigator();
+  const Home = () => (
+    <HomeStack.Navigator
+      initialRouteName='HomeRoot'
+      screenOptions={{ headerShown: false }}>
+      <Tab.Screen name='HomeRoot' component={HomeScreen}/>
+      <Tab.Screen name='About' component={AboutScreen}/>
+    </HomeStack.Navigator>
+  )
+
   return (
     <Tab.Navigator
       initialRouteName='Home'
       tabBar={(props) => <TabBar {...props} />}
       screenOptions={{ headerShown: false }}>
-      <Tab.Screen name='Home' component={HomeScreen}/>
+      <Tab.Screen name='Home' component={Home} />
       <Tab.Screen name='Favorite' component={FavoriteScreen}/>
       <Tab.Screen name='Activity' component={HomeScreen}/>
       <Tab.Screen name='Profile' component={HomeScreen}/>

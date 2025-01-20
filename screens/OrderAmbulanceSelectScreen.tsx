@@ -11,11 +11,9 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
-import StepsHeaderBar from '../components/StepsHeaderBar';
 import Button from '../components/Button';
 import SessionStorage from 'react-native-session-storage';
 import MapView, { Marker } from 'react-native-maps';
-import Carousel from 'react-native-snap-carousel';
 import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
 
 interface Location {
@@ -33,16 +31,28 @@ interface AmbulanceData {
 
 function OrderAmbulanceSelectScreen(): React.JSX.Element {
   const navigation = useNavigation();
+  const currentLoc = SessionStorage.getItem('@current_location');
   const nearbyAmbulances = SessionStorage.getItem('@nearby_ambulances');
   const [ambulances, setAmbulances] = useState<AmbulanceData[]>(nearbyAmbulances)
   const [selected, setSelected] = useState<AmbulanceData>(ambulances[0])
   const map = createRef<MapView>();
   const ambulanceList = createRef<FlatList>();
-  const currentLoc = SessionStorage.getItem('@current_location');
   const numFormat = Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
   })
+  const onMapDisplay = () => {
+    map.current?.setState({ isReady: true })
+    map.current?.setCamera({
+      center: {
+        latitude: currentLoc.lat,
+        longitude: currentLoc.lng
+      },
+      pitch: 1,
+      zoom: 20,
+      heading: 1,
+    })
+  }
   
   return (
     <View style={styles.screenContainer}>
@@ -51,17 +61,8 @@ function OrderAmbulanceSelectScreen(): React.JSX.Element {
         ref={map}
         zoomEnabled={true}
         rotateEnabled={true}
-        onMapLoaded={() => {
-          map.current?.setCamera({
-            center: {
-              latitude: currentLoc.lat,
-              longitude: currentLoc.lng
-            },
-            pitch: 1,
-            zoom: 20,
-            heading: 1,
-          })
-        }}
+        onMapLoaded={onMapDisplay}
+        onLayout={onMapDisplay}
         style={styles.map}
         >
         <Marker
@@ -103,8 +104,7 @@ function OrderAmbulanceSelectScreen(): React.JSX.Element {
                   <Text style={styles.message}>Lokasimu saat ini</Text>
                 </View>
                 <Button
-                  label='Edit'
-                  onPress={() => navigation.canGoBack() && navigation.goBack()}
+                  label='Refresh'
                   buttonStyle={styles.edit}
                   labelStyle={styles.editLabel}/>
               </View>

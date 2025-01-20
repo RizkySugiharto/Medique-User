@@ -17,31 +17,20 @@ import SessionStorage from 'react-native-session-storage';
 import MapView, { Marker } from 'react-native-maps';
 import Carousel from 'react-native-snap-carousel';
 import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
-
-interface Location {
-  lat: number,
-  lng: number,
-}
-
-interface NearbyPlaceData {
-  id: string,
-  name: string,
-  address: string,
-  location: Location,
-}
+import { PlaceData } from '../types';
 
 function OrderDoctorThirdStepByMapScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const nearbyPlaces = SessionStorage.getItem('@nearby_places');
-  const [places, setPlaces] = useState<NearbyPlaceData[]>(nearbyPlaces)
-  const [selected, setSelected] = useState<NearbyPlaceData>(places[0])
+  const [places, setPlaces] = useState<PlaceData[]>(nearbyPlaces)
+  const [selected, setSelected] = useState<PlaceData>(places[0])
   const map = createRef<MapView>();
   const currentLoc = SessionStorage.getItem('@current_location');
-  const carouselItemHeight = 80;
-  const carouselSliderHeightPaddingVertical = 26;
+  const carouselItemHeight = 110;
+  const carouselSliderHeightPaddingVertical = 30;
   const carouselSliderHeight = carouselItemHeight + carouselSliderHeightPaddingVertical * 2;
-  const currentCarousel = createRef<Carousel<NearbyPlaceData>>();
-  const selectPlace = (place: NearbyPlaceData) => {
+  const currentCarousel = createRef<Carousel<PlaceData>>();
+  const selectPlace = (place: PlaceData) => {
     setSelected(place)
     map.current?.setCamera({
       center: {

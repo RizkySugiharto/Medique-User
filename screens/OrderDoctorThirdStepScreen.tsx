@@ -16,19 +16,7 @@ import Button from '../components/Button';
 import SessionStorage from 'react-native-session-storage';
 import ButtonWithIcon from '../components/ButtonWithIcon';
 import utils from '../utils';
-
-interface Location {
-  lat: number,
-  lng: number,
-}
-
-interface PlaceData {
-  id: string,
-  name: string,
-  address: string,
-  location: Location,
-  distance: number
-}
+import { PlaceData } from '../types';
 
 function OrderDoctorThirdStepScreen(): React.JSX.Element {
   const navigation = useNavigation();
@@ -95,9 +83,23 @@ function OrderDoctorThirdStepScreen(): React.JSX.Element {
                 <Text style={styles.placeAddress}>{item.address}</Text>
               </View>
               <TouchableOpacity
+                onPress={() => {
+                  if (item.bookmark) {
+                    let newPlaces = [...places]
+                    newPlaces[index].bookmark = false
+                    newPlaces = newPlaces.filter(value => value.id !== item.id)
+                    SessionStorage.setItem('@bookmarked_places', newPlaces)
+                    setPlaces(newPlaces)
+                  }
+                }}
                 activeOpacity={0.65}
                 style={styles.placeBodyRight}>
-                <Image source={require('../assets/img/ic_bookmark.png')} style={styles.placeBookmark}/>
+                <Image source={
+                  item.bookmark ?
+                  require('../assets/img/ic_bookmark_filled.png')
+                  :
+                  require('../assets/img/ic_bookmark_outline.png')
+                } style={styles.placeBookmark}/>
               </TouchableOpacity>
             </TouchableOpacity>
           )}
@@ -107,7 +109,11 @@ function OrderDoctorThirdStepScreen(): React.JSX.Element {
       </ScrollView>
       <Button
         label='Lanjut'
-        onPress={() => navigation.navigate('OrderDoctorFourthStep' as never)}
+        onPress={() => {
+          if (selected) {
+            navigation.navigate('OrderDoctorFourthStep' as never)
+          }
+        }}
         buttonStyle={{
           position: 'absolute',
           bottom: 30,

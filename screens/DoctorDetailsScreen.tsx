@@ -5,54 +5,25 @@ import {
   Image,
   ScrollView,
   Text,
-  FlatList,
   TouchableOpacity,
   useWindowDimensions
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import StackHeaderBar from '../components/StackHeaderBar';
-import { Rating } from '@kolking/react-native-rating';
 import Button from '../components/Button';
-import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
+import ReviewList from '../components/ReviewList';
+import SessionStorage from 'react-native-session-storage';
+import { CategoryData, DoctorData } from '../types';
 
-const doctorData = {
-  profile: require('../assets/img/placeholder_doctor.png'),
-  name: 'Dr. Abdul',
-  category: 'Dokter Umum',
-  favorite: false,
-  rating: 4.8,
-  experience: 8,
-  details: {
-    patients: 105,
-    address: 'Rumah sakit asri asih ciputat',
-    description: "Halo, saya Dr. Abdul, dokter umum di Rumah Sakit Sarih Asih. Saya berkomitmen memberikan perawatan terbaik dengan pendekatan empatik dan ramah. Selain berpraktek, saya aktif dalam edukasi kesehatan dan terus memperbarui pengetahuan medis untuk membantu pasien memahami dan menjaga kesehatan mereka dengan lebih baik.",
-    workingTime: 'Senin - Minggu : 09:00 AM - 08:00 PM',
-    price: {
-      from: 100_000,
-      to: 500_000,
-    },
-    reviewCount: 1013,
-  },
-}
-
-const reviewsData = [
-  {
-    userProfile: require('../assets/img/placeholder_user.png'),
-    userName: 'Bang Jhon',
-    rating: 4,
-    message: "Dr. Abdul adalah dokter luar biasa! Beliau tidak hanya mengobati, tetapi juga memahami kondisi anak saya dengan penuh kasih. Penjelasannya selalu jelas dan membuat kami merasa tenang. Sangat direkomendasikan untuk keluarga mana pun!"
-  },
-  {
-    userProfile: require('../assets/img/placeholder_user.png'),
-    userName: 'Bang Jhon',
-    rating: 4,
-    message: "Dr. Abdul adalah dokter luar biasa! Beliau tidak hanya mengobati, tetapi juga memahami kondisi anak saya dengan penuh kasih. Penjelasannya selalu jelas dan membuat kami merasa tenang. Sangat direkomendasikan untuk keluarga mana pun!"
-  },
-]
 
 function DoctorDetailsScreen(): React.JSX.Element {
   const navigation = useNavigation();
+  const route: RouteProp<{
+    params: DoctorData
+  }, 'params'> = useRoute()
+  const doctorData = {...route.params}
+  const reviewsData = SessionStorage.getItem('@reviews')
   const window = useWindowDimensions();
   const awardCardSpacing = 10;
   const awardCardWidth = (window.width - (styles.screenContainer.paddingHorizontal * 2)) / 2 - awardCardSpacing
@@ -71,12 +42,13 @@ function DoctorDetailsScreen(): React.JSX.Element {
         <View style={{ paddingHorizontal: styles.screenContainer.paddingHorizontal }}>
           <StackHeaderBar
             label='Kembali'
-            containerStyle={{ paddingTop: 24 }}
+            notificationEnabled={true}
+            rootStyle={{ paddingTop: 24 }}
             labelStyle={{ marginLeft: 8, fontFamily: 'Manrope-Bold' }} />
           <View style={{ height: 30 }} />
           <View style={{ flexDirection: 'row' }}>
             <View style={styles.profileContainer}>
-              <Image source={require('../assets/img/placeholder_doctor.png')} style={styles.profile} />
+              <Image source={doctorData.profile} style={styles.profile} />
             </View>
             <View style={{ width: 14 }} />
             <View style={{ justifyContent: 'space-between', flex: 1 }}>
@@ -123,46 +95,9 @@ function DoctorDetailsScreen(): React.JSX.Element {
           <Text style={styles.infoTitle}>Review {doctorData.rating} ({doctorData.details.reviewCount})</Text>
         </View>
         <View>
-          <FlatList
+          <ReviewList
             data={reviewsData}
-            scrollEnabled={false}
-            renderItem={({ index, item }) => (
-              <ShadowedView
-                style={shadowStyle({
-                  opacity: 1,
-                  offset: [0, 3],
-                  color: 'rgba(0, 0, 0, 0.1)',
-                  radius: 8
-                })}>
-                <View style={styles.reviewCard}>
-                  <Rating
-                    variant='stars-outline'
-                    fillColor='rgb(253, 210, 100)'
-                    baseColor='rgb(253, 210, 100)'
-                    size={20}
-                    rating={item.rating}
-                    maxRating={5}
-                    disabled={true}/>
-                  <View style={{ height: 14 }} />
-                  <Text style={styles.reviewMessage}>{item.message}</Text>
-                  <View style={{ height: 14 }} />
-                  <View>
-                    <View style={styles.reviewUserProfileContainer}>
-                      <Image source={item.userProfile} style={styles.reviewUserProfile} />
-                    </View>
-                    <View style={{ width: 14 }} />
-                    <Text style={styles.reviewUserName}>{item.userName}</Text>
-                  </View>
-                </View>
-              </ShadowedView>
-            )}
-            ItemSeparatorComponent={() => <View style={{ height: 12 }}/>}
-            ListFooterComponent={() => <View style={{ height: 120 }} />}
-            contentContainerStyle={{
-              paddingHorizontal: styles.screenContainer.paddingHorizontal,
-              paddingVertical: 16,
-            }}
-            />
+            paddingHorizontal={styles.screenContainer.paddingHorizontal}/>
         </View>
       </ScrollView>
       <View style={{
@@ -183,7 +118,12 @@ function DoctorDetailsScreen(): React.JSX.Element {
           </TouchableOpacity>
           <View style={{ width: 24 }} />
           <Button
-            onPress={() => navigation.navigate('OrderDoctor' as never)}
+            onPress={() => {
+              const categories: CategoryData[] = SessionStorage.getItem('@categories')
+              SessionStorage.setItem('@selected_category', categories.filter(value => value.name === doctorData.category)[0])
+              SessionStorage.setItem('@selected_doctor', doctorData)
+              navigation.navigate('OrderDoctor' as never)
+            }}
             label='Pesan Sekarang'
             buttonStyle={{ flex: 1, borderRadius: 42 }}
             />
@@ -256,30 +196,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Manrope-Regular',
     fontSize: 14,
     color: Colors.textColorSecondary,
-    includeFontPadding: false,
-  },
-  reviewCard: {
-    padding: 20,
-    backgroundColor: Colors.secondary,
-    borderRadius: 9,
-  },
-  reviewMessage: {
-    fontFamily: 'Manrope-Regular',
-    fontSize: 14,
-    color: Colors.textColor,
-    includeFontPadding: false,
-  },
-  reviewUserProfileContainer: {
-    borderRadius: '100%',
-  },
-  reviewUserProfile: {
-    width: 50,
-    height: 50,
-  },
-  reviewUserName: {
-    fontFamily: 'Manrope-Semibold',
-    fontSize: 18,
-    color: Colors.textColor,
     includeFontPadding: false,
   },
   favorite: {

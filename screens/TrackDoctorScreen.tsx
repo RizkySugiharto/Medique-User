@@ -6,7 +6,7 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import Button from '../components/Button';
 import StackHeaderBar from '../components/StackHeaderBar';
@@ -14,31 +14,14 @@ import MapView, { Marker } from 'react-native-maps';
 import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
 import SessionStorage from 'react-native-session-storage';
 import utils from '../utils';
+import { DoctorData, DoctorLocation } from '../types';
 
-interface Location {
-  lat: number,
-  lng: number
-}
-
-interface DoctorData {
-  profile: any,
-  name: string,
-  category: string,
-  status: 'on-the-way' | 'finished'
-}
-
-interface LocationStatus {
-  time: number,
-  distance: number,
-  location: Location,
-}
-
-function NavbarStatusView({ doctorData, doctorLocStatus }: { doctorData: DoctorData, doctorLocStatus: LocationStatus }): ReactNode | ReactElement {
+function NavbarStatusView({ doctorData, doctorLoc }: { doctorData: DoctorData, doctorLoc: DoctorLocation }): ReactNode | ReactElement {
   const navigation = useNavigation();
 
   return (
     <>
-      { doctorData.status === 'on-the-way' ?
+      { doctorLoc.status === 'on-the-way' ?
       <View style={styles.navbarContainer}>
         <View style={{ borderRadius: '100%', width: 54, height: 54, overflow: 'hidden' }}>
           <Image
@@ -46,7 +29,7 @@ function NavbarStatusView({ doctorData, doctorLocStatus }: { doctorData: DoctorD
             style={{ width: 54, height: 54 }}/>
         </View>
         <View style={{ justifyContent: 'center' }}>
-          <Text style={styles.navbarTitle}>Tiba dalam {utils.timeToText(doctorLocStatus.time)}</Text>
+          <Text style={styles.navbarTitle}>Tiba dalam {utils.timeToText(doctorLoc.time)}</Text>
           <View style={{ height: 2 }} />
           <Text style={styles.navbarSubtitle} numberOfLines={1}>{doctorData.name}</Text>
         </View>
@@ -85,25 +68,41 @@ function TrackDoctorScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const map = createRef<MapView>();
   const currentLoc = SessionStorage.getItem('@current_location');
-  const doctorData: DoctorData = {
-    profile: require('../assets/img/placeholder_doctor.png'),
-    name: 'Dr. Sumanto',
-    category: 'Dokter Umum',
-    status: 'finished',
-  }
-  const doctorLocStatus: LocationStatus = {
-    time: 300,
-    distance: 2500,
+  const doctorData: DoctorData = SessionStorage.getItem('@selected_doctor')
+  const [doctorLoc, setDoctorLoc] = useState<DoctorLocation>({
+    status: 'on-the-way',
+    time: 245,
+    distance: 834,
     location: {
-      lat: -6.300594,
-      lng: 106.702969,
+      lat: -6.298,
+      lng: 106.704,
     },
+  })
+  const onMapDisplay = () => {
+    map.current?.setState({ isReady: true })
+    map.current?.setCamera({
+      center: {
+        latitude: doctorLoc.location.lat,
+        longitude: doctorLoc.location.lng
+      },
+      pitch: 1,
+      zoom: 20,
+      heading: 1,
+    })
   }
+
+  useFocusEffect(() => {
+    setTimeout(() => {
+      const newDoctorLoc = {...doctorLoc}
+      newDoctorLoc.status = 'finished'
+      setDoctorLoc(newDoctorLoc)
+    }, 10_000)
+  })
 
   SessionStorage.setItem('@navbar_status_view', (
     <NavbarStatusView
       doctorData={doctorData}
-      doctorLocStatus={doctorLocStatus}/>
+      doctorLoc={doctorLoc}/>
   ))
   
   return (
@@ -113,22 +112,13 @@ function TrackDoctorScreen(): React.JSX.Element {
         ref={map}
         zoomEnabled={true}
         rotateEnabled={true}
-        onMapLoaded={() => {
-          map.current?.setCamera({
-            center: {
-              latitude: doctorLocStatus.location.lat,
-              longitude: doctorLocStatus.location.lng
-            },
-            pitch: 1,
-            zoom: 20,
-            heading: 1,
-          })
-        }}
+        onMapLoaded={onMapDisplay}
+        onLayout={onMapDisplay}
         style={styles.map}>
         <Marker
           coordinate={{
-            latitude: doctorLocStatus.location.lat,
-            longitude: doctorLocStatus.location.lng
+            latitude: doctorLoc.location.lat,
+            longitude: doctorLoc.location.lng
           }}
           icon={require('../assets/img/placeholder_doctor_marker.png')}/>
         <Marker
@@ -168,7 +158,7 @@ function TrackDoctorScreen(): React.JSX.Element {
           <View style={styles.card}>
             <View style={{ paddingHorizontal: 24 }}>
               <Text style={styles.highlightText}>{
-                doctorData.status === 'on-the-way' ?
+                doctorLoc.status === 'on-the-way' ?
                 'Dokter segera menuju ke lokasi kamu'
                 :
                 'Dokter sudah selesai'
@@ -197,8 +187,8 @@ function TrackDoctorScreen(): React.JSX.Element {
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image source={require('../assets/img/ic_pin_time.png')} style={{ width: 24, height: 24 }} />
                 <View style={{ width: 12 }} />
-                { doctorData.status === 'on-the-way' ?
-                <Text style={styles.extraboldText}>Tiba dalam {utils.timeToText(doctorLocStatus.time)}</Text>
+                { doctorLoc.status === 'on-the-way' ?
+                <Text style={styles.extraboldText}>Tiba dalam {utils.timeToText(doctorLoc.time)}</Text>
                 :
                 <Text style={styles.extraboldText}>Lihat rincian biaya</Text>
                 }
@@ -207,7 +197,7 @@ function TrackDoctorScreen(): React.JSX.Element {
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image source={require('../assets/img/ic_pin_distance.png')} style={{ width: 24, height: 24 }} />
                 <View style={{ width: 12 }} />
-                <Text style={styles.regularText}>Jarak: {utils.distanceToText(doctorLocStatus.distance)}</Text>
+                <Text style={styles.regularText}>Jarak: {utils.distanceToText(doctorLoc.distance)}</Text>
               </View>
               <View style={{ height: 32 }} />
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -219,13 +209,9 @@ function TrackDoctorScreen(): React.JSX.Element {
                     style={{ width: 40, height: 40 }} />
                 </TouchableOpacity>
                 <View style={{ width: 16 }}/>
-                {doctorData.status === 'on-the-way' ?
+                {doctorLoc.status === 'on-the-way' ?
                   <Button
-                    onPress={() => navigation.navigate(...['DoctorDetails', {
-                      params: {
-                        doctorId: 1
-                      }
-                    }] as never)}
+                    onPress={() => navigation.navigate(...['DoctorDetails', doctorData] as never)}
                     label='Lihat profil dokter'
                     buttonStyle={{
                       flex: 1,

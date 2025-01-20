@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -9,25 +9,21 @@ import {
 } from 'react-native';
 import Colors  from '../styles/colors';
 import { Rating } from '@kolking/react-native-rating';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Modal from "react-native-modal";
 import { ShadowedView, shadowStyle } from 'react-native-fast-shadow';
+import { DoctorData } from '../types';
+import SessionStorage from 'react-native-session-storage';
 
 interface Props {
-  data: {
-    profile: any,
-    name: string,
-    category: string,
-    favorite: boolean,
-    rating: number,
-    experience: number,
-  }
+  data: DoctorData,
+  onToggleFavorite?: (isFavorite: boolean) => void
 }
 
-function DoctorCard({ data }: Props): React.JSX.Element {
-  const window = useWindowDimensions()
+function DoctorCard({ data, onToggleFavorite }: Props): React.JSX.Element {
   const navigation = useNavigation();
-  const profileSize = ( ( window.width - 24 * 2) - 16 ) / 2
+  const window = useWindowDimensions()
+  const profileSize = ( window.width - 24 * 2) / 2 - 16
   const [favorite, setFavorite] = useState(data.favorite);
   const [favoriteVerify, setFavoriteVerify] = useState(false);
   const handleFavorite = () => {
@@ -38,9 +34,20 @@ function DoctorCard({ data }: Props): React.JSX.Element {
     }
   }
   const toggleFavorite = () => {
-    data.favorite = !data.favorite
-    setFavorite(data.favorite)
+    const newData = {...data}
+    newData.favorite = !newData.favorite
+    setFavorite(newData.favorite)
+    onToggleFavorite && onToggleFavorite(newData.favorite)
+    let newDoctors: DoctorData[] = SessionStorage.getItem('@doctors')
+    newDoctors.map((value, index) => {
+      if (value.id === newData.id) {
+        newDoctors[index].favorite = newData.favorite
+      }
+    })
+    SessionStorage.setItem('@doctors', newDoctors)
   }
+
+  console.log(data.favorite)
 
   return (
     <>
@@ -107,7 +114,7 @@ function DoctorCard({ data }: Props): React.JSX.Element {
       </Modal>
     </View>
     <TouchableOpacity
-      onPress={() => navigation.navigate('DoctorDetails' as never)}
+      onPress={() => navigation.navigate(...['DoctorDetails', data] as never)}
       activeOpacity={0.8}
       style={{ width: profileSize }}>
       <TouchableOpacity

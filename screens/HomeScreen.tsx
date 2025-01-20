@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,72 +7,39 @@ import {
   TouchableOpacity,
   FlatList
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useNavigationState } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import DoctorCard from '../components/DoctorCard';
 import { format as formatDate } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale/id'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SearchBar from '../components/SearchBar';
-
-const userData = {
-  profile: require('../assets/img/placeholder_user.png'),
-  name: 'Frendi',
-}
-
-const doctors = [
-  {
-    profile: require('../assets/img/placeholder_doctor.png'),
-    name: 'Dr. Abdul',
-    category: 'Dokter Umum',
-    favorite: false,
-    rating: 4.8,
-    experience: 8,
-  },
-  {
-    profile: require('../assets/img/placeholder_doctor.png'),
-    name: 'Dr. Abdul',
-    category: 'Dokter Umum',
-    favorite: false,
-    rating: 4.8,
-    experience: 8,
-  },
-  {
-    profile: require('../assets/img/placeholder_doctor.png'),
-    name: 'Dr. Abdul',
-    category: 'Dokter Umum',
-    favorite: false,
-    rating: 4.8,
-    experience: 8,
-  },
-  {
-    profile: require('../assets/img/placeholder_doctor.png'),
-    name: 'Dr. Abdul',
-    category: 'Dokter Umum',
-    favorite: false,
-    rating: 4.8,
-    experience: 8,
-  },
-]
-
-const articles = [
-  {
-    image: require('../assets/img/placeholder_article.png'),
-    category: 'Covid-19',
-    title: 'Kengerian gelombang kedua covid-19',
-    publishDate: new Date(Date.now())
-  },
-  {
-    image: require('../assets/img/placeholder_article.png'),
-    category: 'Trend',
-    title: 'Virus baru di Indo',
-    publishDate: new Date(Date.now())
-  },
-]
+import { DoctorData, UserData } from '../types';
+import SessionStorage from 'react-native-session-storage';
 
 function HomeScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const [search, setSearch] = useState('');
+  const userData: UserData = SessionStorage.getItem('@user_data')
+  const [doctors, setDoctors] = useState<DoctorData[]>(SessionStorage.getItem('@doctors'))
+  const articles = [
+    {
+      image: require('../assets/img/placeholder_article.png'),
+      category: 'Covid-19',
+      title: 'Kengerian gelombang kedua covid-19',
+      publishDate: new Date(Date.now())
+    },
+    {
+      image: require('../assets/img/placeholder_article.png'),
+      category: 'Trend',
+      title: 'Virus baru di Indo',
+      publishDate: new Date(Date.now())
+    },
+  ]
+
+  useFocusEffect(() => {
+    setDoctors(SessionStorage.getItem('@doctors'))
+  })
 
   return (
     <KeyboardAwareScrollView
@@ -82,7 +49,7 @@ function HomeScreen(): React.JSX.Element {
       <View style={{ paddingHorizontal: styles.screenContainer.padding, paddingTop: styles.screenContainer.padding }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={{ flex: 1, flexDirection: 'row' }}>
-            <Image source={require('../assets/img/placeholder_user.png')} style={styles.profile} />
+            <Image source={userData.profile} style={styles.profile} />
             <View style={{ width: 16 }} />
             <View style={{ alignSelf: 'center', justifyContent: 'center' }}>
               <Text style={styles.username}>Hi,Frendi</Text>
@@ -104,6 +71,7 @@ function HomeScreen(): React.JSX.Element {
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity
             activeOpacity={0.8}
+            onPress={() => navigation.navigate('OrderAmbulance' as never)}
             style={[styles.service, { backgroundColor: '#F8CE46', justifyContent: 'flex-end' }]}>
             <Image source={require('../assets/img/home_ambulance.png')} />
             <Text style={[styles.serviceName, { paddingTop: 4 }]}>Ambulans</Text>
@@ -123,19 +91,18 @@ function HomeScreen(): React.JSX.Element {
         <View style={{height: 16}} />
         <TouchableOpacity
           activeOpacity={0.8}
+          onPress={() => navigation.navigate('About' as never)}
           style={[styles.service, { backgroundColor: '#D42358', overflow: 'hidden', flexDirection: 'row', flex: 0 }]}>
-          <View style={{ justifyContent: 'center', width: 200 }}>
-            <Text style={[
-              styles.serviceName,
-              {
-                color: Colors.textColorWhite,
-                fontFamily: 'Manrope-Bold',
-              }]}>
-                Dapatkan Voucher Menarik untuk Layanan Kesehatan!
-              </Text>
+          <View style={{ justifyContent: 'space-between', width: 200 }}>
+            <Text style={[styles.serviceName, { color: Colors.textColorWhite, fontFamily: 'Manrope-Bold' }]}>Medique apa sih itu ?</Text>
+            <Text>
+              <Text style={[styles.serviceName, { color: Colors.textColorWhite }]} >yuk! kita kenal medique lebih dalam dengan cara</Text>
+              <View style={{width: 4}}/>
+              <Text style={[styles.serviceName, { color: Colors.textColorWhite, fontFamily: 'Manrope-Bold' }]} >kilk disini</Text>
+            </Text>
           </View>
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Image source={require('../assets/img/home_doctor_medic.png')} style={{ height: 132, marginVertical: -10 }} />
+            <Image source={require('../assets/img/home_doctor_medic.png')} style={{ height: 132, marginVertical: -8 }} />
           </View>
         </TouchableOpacity>
         <View style={{height: 32}} />
@@ -155,7 +122,7 @@ function HomeScreen(): React.JSX.Element {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item, index }) => (
-            <DoctorCard data={item} />
+            <DoctorCard key={index} data={item} />
           )}
           ItemSeparatorComponent={() => <View style={{ width: 24 }} />}
           ListHeaderComponent={() => <View style={{ width: 24 }} />}
@@ -176,6 +143,7 @@ function HomeScreen(): React.JSX.Element {
         data={articles}
         renderItem={({ index, item }) => (
           <TouchableOpacity
+            key={index}
             activeOpacity={0.8}
             style={styles.articleCard}>
             <Image source={item.image} style={styles.articleImage}/>

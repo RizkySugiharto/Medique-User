@@ -10,7 +10,7 @@ import {
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import Button from '../components/Button';
-import ButtonWithIcon from '../components/ButtonWithIcon';
+import SessionStorage from 'react-native-session-storage';
 
 function OrderAmbulanceFinishedScreen(): React.JSX.Element {
   const navigation = useNavigation();
@@ -55,7 +55,10 @@ function OrderAmbulanceFinishedScreen(): React.JSX.Element {
       </Animated.View>
       <Button
         label='Kembali ke beranda'
-        onPress={() => navigation.navigate(...['Root', { screen: 'Home' }] as never)}
+        onPress={() => {
+          SessionStorage.setItem('@navbar_status_view', undefined)
+          navigation.navigate(...['Root', { screen: 'Home' }] as never)
+        }}
         labelStyle={styles.semiboldText}
         buttonStyle={{
           position: 'absolute',

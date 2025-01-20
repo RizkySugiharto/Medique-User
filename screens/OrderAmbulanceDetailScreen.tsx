@@ -56,6 +56,18 @@ function OrderAmbulanceDetailScreen(): React.JSX.Element {
     SessionStorage.setItem('@selected_ambulance_track', ambulanceTrack)
     navigation.navigate(...['OrderAmbulance', { screen: 'TrackAmbulance' }] as never)
   }
+  const onMapDisplay = () => {
+    map.current?.setState({ isReady: true })
+    map.current?.setCamera({
+      center: {
+        latitude: ambulanceData.location.lat,
+        longitude: ambulanceData.location.lng
+      },
+      pitch: 1,
+      zoom: 20,
+      heading: 1,
+    })
+  }
   
   return (
     <View style={styles.screenContainer}>
@@ -64,17 +76,8 @@ function OrderAmbulanceDetailScreen(): React.JSX.Element {
         ref={map}
         zoomEnabled={true}
         rotateEnabled={true}
-        onMapLoaded={() => {
-          map.current?.setCamera({
-            center: {
-              latitude: ambulanceData.location.lat,
-              longitude: ambulanceData.location.lng
-            },
-            pitch: 1,
-            zoom: 20,
-            heading: 1,
-          })
-        }}
+        onMapLoaded={onMapDisplay}
+        onLayout={onMapDisplay}
         style={styles.map}>
         <Marker
           coordinate={{

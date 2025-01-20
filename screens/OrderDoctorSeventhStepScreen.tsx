@@ -12,18 +12,10 @@ import Button from '../components/Button';
 import LabeledInput from '../components/LabeledInput';
 import { Rating } from '@kolking/react-native-rating';
 import SessionStorage from 'react-native-session-storage';
-
-interface DoctorData {
-  name: string,
-  favorite: boolean
-}
+import { DoctorData } from '../types';
 
 function getDoctorData(): DoctorData {
-  const data = SessionStorage.getItem('@selected_doctor')
-  return {
-    name: data.name,
-    favorite: data.favorite,
-  }
+  return SessionStorage.getItem('@selected_doctor')
 }
 
 function OrderDoctorSeventhStepScreen(): React.JSX.Element {
@@ -33,16 +25,26 @@ function OrderDoctorSeventhStepScreen(): React.JSX.Element {
   const [rating, setRating] = useState(0);
   const [favorite, setFavorite] = useState(doctorData.favorite);
   const handleFavorite = () => {
-    doctorData.favorite = !doctorData.favorite
-    SessionStorage.setItem('@selected_doctor',
-      {
-        ...SessionStorage.getItem('@selected_doctor'),
-        ...doctorData
-      }
-    )
-    setFavorite(doctorData.favorite)
+    const newFavorite = !favorite
+    const newDoctors: DoctorData[] = [...SessionStorage.getItem('@doctors')]
+    let doctorIndex: number = 0
+    newDoctors.filter((value, index) => {
+      doctorIndex = index
+      return value.id === doctorData.id
+    })[0]
+
+    newDoctors[doctorIndex].favorite = newFavorite
+    SessionStorage.setItem('@doctors', newDoctors)
+    setFavorite(newFavorite)
+  }
+  const onFinished = () => {
+    SessionStorage.setItem('@selected_doctor', undefined)
+    SessionStorage.setItem('@selected_category', undefined)
+    SessionStorage.setItem('@selected_doctor_status', undefined)
+    SessionStorage.setItem('@navbar_status_view', undefined)
   }
   const handleSendReview = () => {
+    onFinished()
     navigation.navigate(...['Root', { screen: 'Home' }] as never)
   }
   
@@ -107,7 +109,10 @@ function OrderDoctorSeventhStepScreen(): React.JSX.Element {
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'baseline' }}>
           <Button
             label='Lewati'
-            onPress={() => navigation.navigate(...['Root', { screen: 'Home' }] as never)}
+            onPress={() => {
+              onFinished()
+              navigation.navigate(...['Root', { screen: 'Home' }] as never)
+            }}
             labelStyle={styles.boldTextPrimary}
             buttonStyle={{
               backgroundColor: Colors.secondary,

@@ -8,46 +8,20 @@ import {
   TouchableOpacity,
   FlatList
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import StepsHeaderBar from '../components/StepsHeaderBar';
 import Button from '../components/Button';
 import { Rating } from '@kolking/react-native-rating';
+import { CategoryData, DoctorData } from '../types';
+import SessionStorage from 'react-native-session-storage';
 
-interface DoctorData {
-  profile: any,
-  name: string,
-  category: string,
-  startPrice: number,
-  rating: number,
-  experience: number,
-  favorite: boolean,
-}
-
-const doctors: DoctorData[] = [
-  {
-    profile: require('../assets/img/placeholder_doctor.png'),
-    name: 'Dr. Sumanto',
-    category: 'Dokter Umum',
-    startPrice: 300_000,
-    rating: 4.8,
-    experience: 28,
-    favorite: true,
-  },
-  {
-    profile: require('../assets/img/placeholder_doctor.png'),
-    name: 'Dr. Abdul',
-    category: 'Dokter Umum',
-    startPrice: 300_000,
-    rating: 4.4,
-    experience: 8,
-    favorite: true,
-  },
-]
 
 function OrderDoctorFourthStepScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const [selected, setSelected] = useState<DoctorData>(doctors[0]);
+  const selectedCategory: CategoryData | undefined = SessionStorage.getItem('@selected_category')
+  const doctors: DoctorData[] = SessionStorage.getItem('@doctors')
+  const [selected, setSelected] = useState<DoctorData | undefined>(SessionStorage.getItem('@selected_doctor'));
   const numFormat = Intl.NumberFormat('id-ID', {
     currency: 'IND',
   })
@@ -67,12 +41,17 @@ function OrderDoctorFourthStepScreen(): React.JSX.Element {
           <View style={{ height: 20, opacity: 0 }} />
           <FlatList
             scrollEnabled={false}
-            data={doctors}
+            data={
+              selectedCategory ?
+              doctors.filter((value) => value.category == selectedCategory?.name)
+              :
+              doctors
+            }
             renderItem={({ item, index }) => (
               <TouchableOpacity
                 onPress={() => setSelected(item)}
                 activeOpacity={0.6}
-                style={[styles.card, item === selected && styles.cardSelected]}>
+                style={[styles.card, item.id == selected?.id && styles.cardSelected]}>
                 <View style={styles.profileContainer}>
                   <Image source={item.profile} style={styles.profile} />
                 </View>
@@ -80,7 +59,7 @@ function OrderDoctorFourthStepScreen(): React.JSX.Element {
                   <Text style={styles.boldText}>{item.name}</Text>
                   <Text style={styles.regularText}>{item.category}</Text>
                   <View style={{ height: 6 }} />
-                  <Text style={styles.regularText}>Rp {numFormat.format(item.startPrice)}</Text>
+                  <Text style={styles.regularText}>Rp {numFormat.format(item.details.price.from)}</Text>
                 </View>
                 <View style={{ justifyContent: 'space-between', flex: 1, alignItems: 'flex-end' }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -106,7 +85,12 @@ function OrderDoctorFourthStepScreen(): React.JSX.Element {
                     alignItems: 'flex-end',
                   }}>
                     <Image
-                      source={require('../assets/img/ic_favorite_filled.png')}
+                      source={
+                        item.favorite ?
+                        require('../assets/img/ic_favorite_filled.png')
+                        :
+                        require('../assets/img/ic_favorite_outline.png')
+                      }
                       style={{
                         width: 24,
                         height: 24,
@@ -123,7 +107,13 @@ function OrderDoctorFourthStepScreen(): React.JSX.Element {
       </ScrollView>
       <Button
         label='Lanjut'
-        onPress={() => navigation.navigate('OrderDoctorFifthStep' as never)}
+        onPress={() => {
+          if (selected) {
+            SessionStorage.setItem('@selected_doctor', selected)
+            SessionStorage.setItem('@selected_category', selectedCategory)
+            navigation.navigate('OrderDoctorFifthStep' as never)
+          }
+        }}
         buttonStyle={{
           position: 'absolute',
           bottom: 30,

@@ -36,7 +36,8 @@ function DoctorCategories(): React.JSX.Element {
       style={styles.screenContainer}>
       <StackHeaderBar
         label='Kembali'
-        containerStyle={{ paddingTop: 24 }}
+        notificationEnabled={true}
+        rootStyle={{ paddingTop: 24 }}
         labelStyle={{ marginLeft: 8, fontFamily: 'Manrope-Bold' }} />
       <View style={{ height: 54 }} />
       <Text style={styles.title}>Kategori dokter</Text>

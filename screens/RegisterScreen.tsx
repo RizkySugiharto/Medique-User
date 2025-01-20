@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   useWindowDimensions
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import ButtonWithIcon from '../components/ButtonWithIcon';
 import LabeledInput from '../components/LabeledInput';
 import Button from '../components/Button';
+import SessionStorage from 'react-native-session-storage';
 
 function RegisterScreen(): React.JSX.Element {
   const navigation = useNavigation();
@@ -23,6 +24,12 @@ function RegisterScreen(): React.JSX.Element {
   const [requireds, setRequireds] = useState<number[]>([]);
   const columnGap = 6
   const authButtonWidth = (window.width - styles.screenContainer.padding * 2 ) / 2 - columnGap
+
+  useFocusEffect(() => {
+    if (SessionStorage.getItem('@logged_in')) {
+      navigation.navigate(...['Root', { screen: 'Home' }] as never)
+    }
+  })
 
   return (
     <ScrollView
@@ -120,9 +127,14 @@ function RegisterScreen(): React.JSX.Element {
           let i = 0;
           for (const field of [name, email, password, numPhone]) {
             if (field.length <= 0) newRequireds.push(i)
-            i++
+              i++
           }
           setRequireds(newRequireds)
+
+          if (newRequireds.length <= 0) {
+            SessionStorage.setItem('@logged_in', true)
+            navigation.navigate(...['Root', { screen: 'Home' }] as never)
+          }
         }}
         buttonStyle={styles.button}
         labelStyle={{

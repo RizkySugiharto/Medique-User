@@ -5,37 +5,32 @@ import {
   Image,
   TouchableOpacity,
   Text,
-  useWindowDimensions,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import SearchBar from '../components/SearchBar';
 import SessionStorage from 'react-native-session-storage';
 import { FlatGrid } from 'react-native-super-grid';
 import DoctorCard from '../components/DoctorCard';
 import Button from '../components/Button';
+import { CategoryData, DoctorData } from '../types';
 
-interface DoctorCategory {
+interface FilterCategory {
   icon: any,
   name: string,
   selected: boolean,
 }
 
-interface DoctorData {
-  id: number,
-  profile: any,
-  name: string,
-  category: string,
-  favorite: boolean,
-  rating: number,
-  experience: number,
-}
-
 function FavoriteScreen(): React.JSX.Element {
+  const getFavotedDoctors = () => {
+    return SessionStorage.getItem('@doctors').filter(
+      (value: DoctorData) => value.favorite
+    )
+  }
   const navigation = useNavigation();
-  const [categories, setCategories] = useState<DoctorCategory[]>(SessionStorage.getItem('@categories').map((value: DoctorCategory) => ({...value, selected: false})) || [])
+  const [categories, setCategories] = useState<FilterCategory[]>(SessionStorage.getItem('@categories').map((value: CategoryData) => ({...value, selected: false})) || [])
   const [filterCount, setFilterCount] = useState(0);
-  const favoritedDoctors: DoctorData[] = SessionStorage.getItem('@favorited_doctors')
+  const [favoritedDoctors, setFavoritedDoctors] = useState<DoctorData[] | []>(getFavotedDoctors())
   const [search, setSearch] = useState('');
   const toggleSelectedCategories = (index: number) => {
     const newCategories = [...categories]
@@ -43,6 +38,10 @@ function FavoriteScreen(): React.JSX.Element {
     setFilterCount(newCategories[index].selected ? filterCount + 1 : filterCount - 1)
     setCategories(newCategories)
   }
+
+  useFocusEffect(() => {
+    setFavoritedDoctors(getFavotedDoctors())
+  })
 
   return (
     <View style={styles.screenContainer}>
@@ -151,11 +150,40 @@ function FavoriteScreen(): React.JSX.Element {
         />
       <View style={{ height: 8 }} />
       <FlatGrid
-        data={favoritedDoctors}
+        data={
+          filterCount > 0 ?
+          favoritedDoctors
+            .filter((value) => {
+              return categories
+                .filter((value) => value.selected)
+                .map((value) => value.name)
+                .includes(value.category)
+          })
+          :
+          favoritedDoctors
+        }
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => (
-          <DoctorCard key={item.id} data={item} />
+          <DoctorCard
+            key={item.name + index}
+            data={item}
+            onToggleFavorite={(isFavorite) => {
+              if (!isFavorite) {
+                const newFavorited = favoritedDoctors.slice(index, index + 1)
+                setFavoritedDoctors(newFavorited)
+                const doctors: DoctorData[] = SessionStorage.getItem('@doctors')
+                doctors.map((value, index) => {
+                  if (value.id === item.id) {
+                    doctors[index].favorite = isFavorite
+                  }
+                })
+                SessionStorage.setItem('@doctors', doctors)
+              }
+            }} />
         )}
+        itemContainerStyle={{
+          justifyContent: 'flex-start'
+        }}
         additionalRowStyle={{
           justifyContent: 'space-between',
           paddingLeft: 0,

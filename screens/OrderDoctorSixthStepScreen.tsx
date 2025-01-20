@@ -15,22 +15,11 @@ import Button from '../components/Button';
 import SessionStorage from 'react-native-session-storage';
 import LabeledInput from '../components/LabeledInput';
 import utils from '../utils';
+import { DoctorData, UserData } from '../types';
 
 interface PriceData {
   name: string,
   price: number,
-}
-
-interface DoctorData {
-  profile: any,
-  name: string,
-  category: string,
-}
-
-interface UserData {
-  name: string,
-  gender: 'Laki-Laki' | 'Perempuan',
-  birthDate: Date,
 }
 
 interface DetailBox {
@@ -41,21 +30,11 @@ interface DetailBox {
 }
 
 function getUserData(): UserData {
-  const data = SessionStorage.getItem('@user_data')
-  return {
-    name: data.name,
-    gender: data.gender,
-    birthDate: data.birthDate
-  }
+  return SessionStorage.getItem('@user_data')
 }
 
 function getDoctorData(): DoctorData {
-  const data = SessionStorage.getItem('@selected_doctor')
-  return {
-    profile: data.profile,
-    name: data.name,
-    category: data.category,
-  }
+  return SessionStorage.getItem('@selected_doctor')
 }
 
 function DetailBox({ label, renderTop, renderBottom, onRefresh }: DetailBox): React.ReactNode | React.ReactElement {

@@ -7,7 +7,7 @@ import {
   Text,
   TouchableOpacity
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Colors  from '../styles/colors';
 import StepsHeaderBar from '../components/StepsHeaderBar';
 import LabeledInput from '../components/LabeledInput';
@@ -15,12 +15,21 @@ import Button from '../components/Button';
 import { SimpleGrid } from 'react-native-super-grid';
 import CategoryCard from '../components/CategoryCard';
 import SessionStorage from 'react-native-session-storage';
+import { CategoryData } from '../types';
 
 function OrderDoctorSecondStepScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const categories = SessionStorage.getItem('@categories')
-  const [selected, setSelected] = useState(0);
+  const categories: CategoryData[] = SessionStorage.getItem('@categories')
+  const selectedCategory: number = categories.indexOf(SessionStorage.getItem('@selected_category'))
+  const [selected, setSelected] = useState(
+    selectedCategory < 0 ? 0 : selectedCategory
+  );
   const [prompt, setPrompt] = useState('');
+  const [resultPrompt, setResultPrompt] = useState<CategoryData | undefined>()
+
+  useFocusEffect(() => {
+    SessionStorage.setItem('@selected_category', categories[selected])
+  })
   
   return (
     <View style={styles.screenContainer}>
@@ -46,14 +55,17 @@ function OrderDoctorSecondStepScreen(): React.JSX.Element {
             inputStyle={styles.inputText}
             renderRight={() => (
               <TouchableOpacity
+                onPress={() => setResultPrompt(categories[0])}
                 style={styles.send}
                 activeOpacity={0.8}>
                 <Image source={require('../assets/img/ic_send.png')} style={styles.sendIcon} />
               </TouchableOpacity>
             )}
             />
-          <View style={{ height: 28 }} />
-          <Text style={styles.mediumText}>Untuk penyakit kamu, saya saran kan kamu untuk milih <Text style={styles.bold}>dokter spesialis anak</Text></Text>
+          { resultPrompt && <>
+            <View style={{ height: 28 }} />
+            <Text style={styles.mediumText}>Untuk penyakit kamu, saya saran kan kamu untuk milih <Text style={styles.bold}>dokter spesialis anak</Text></Text>
+          </>}
           <View style={{ height: 26 }} />
         </View>
         <View style={{ width: '100%', height: 3, backgroundColor: Colors.primaryShadow }} />
@@ -70,7 +82,10 @@ function OrderDoctorSecondStepScreen(): React.JSX.Element {
                 icon={item.icon}
                 name={item.name}
                 selected={selected === index}
-                onPress={() => setSelected(index)} />
+                onPress={() => {
+                  SessionStorage.setItem('@selected_category', item)
+                  setSelected(index)
+                }} />
             )}
             />
             <View style={{ height: 100 }} />
