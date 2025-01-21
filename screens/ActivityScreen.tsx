@@ -20,12 +20,6 @@ interface propCardChat {
     indexData : number,
 }
 
-interface InterfaceTabBarActivity{
-    index : number,
-    setIndex :React.Dispatch<React.SetStateAction<number>>,
-    unreadMessages : {name : string,unread : number}[],
-}
-
 const Hero = ({setMessages} : any) => {
     const [search,setSearch] = useState('');
     const [isFocus,setFocus] = useState(false);
@@ -47,7 +41,6 @@ const Hero = ({setMessages} : any) => {
                 });
                 if(hasArticle.length > 0) return value;
             });
-            console.log(article.length);
             if(article.length > 0) return article;
             return dataMessages;
         }
@@ -60,30 +53,6 @@ const Hero = ({setMessages} : any) => {
        <SearchBarW  placeholder="Cari chat dengan dokter..." isFocus={isFocus} setFocus={setFocus} setSearch={setSearch}/>
     </View>
     )
-}
-
-function TabBarActivity({index,setIndex,unreadMessages} : InterfaceTabBarActivity){
-    return(
-        <View style={style.ViewRoot}>
-            {routes.map((value,routeIndex) => {
-                return <Pressable 
-                    key={routeIndex + index}
-                    style={isActive()? style.ActivePage : style.UnActivePage}
-                    onPress={() => setIndex(routeIndex)}>
-                    <Text style={isActive()? style.ActiveText : {}}>{unreadMessages[routeIndex].name}</Text>
-                    <Text style={unreadMessages[routeIndex].unread > 0? style.HasNotif : {}}>{unreadMessages[routeIndex].unread > 0? unreadMessages[routeIndex].unread : '' }</Text>
-                </Pressable>
-
-                function isActive() : Boolean{
-                    return routeIndex == index
-                }
-
-                
-
-            })}
-        </View>
-    )
-    
 }
 
 function CreateCardChat({title,name,latestMessage,latestDate,totalUnreadMessages,image,indexData} : propCardChat) : React.JSX.Element{

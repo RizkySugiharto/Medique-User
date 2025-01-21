@@ -14,6 +14,7 @@ import { FlatGrid } from 'react-native-super-grid';
 import DoctorCard from '../components/DoctorCard';
 import Button from '../components/Button';
 import { CategoryData, DoctorData } from '../types';
+import CategoriesFilterModal from '../components/CategoriesFilterModal';
 
 interface FilterCategory {
   icon: any,
@@ -29,15 +30,9 @@ function FavoriteScreen(): React.JSX.Element {
   }
   const navigation = useNavigation();
   const [categories, setCategories] = useState<FilterCategory[]>(SessionStorage.getItem('@categories').map((value: CategoryData) => ({...value, selected: false})) || [])
-  const [filterCount, setFilterCount] = useState(0);
+  const [isFiltering, setIsFiltering] = useState(false)
   const [favoritedDoctors, setFavoritedDoctors] = useState<DoctorData[] | []>(getFavotedDoctors())
   const [search, setSearch] = useState('');
-  const toggleSelectedCategories = (index: number) => {
-    const newCategories = [...categories]
-    newCategories[index].selected = !newCategories[index].selected
-    setFilterCount(newCategories[index].selected ? filterCount + 1 : filterCount - 1)
-    setCategories(newCategories)
-  }
 
   useFocusEffect(() => {
     setFavoritedDoctors(getFavotedDoctors())
@@ -52,90 +47,13 @@ function FavoriteScreen(): React.JSX.Element {
         onChangeText={setSearch}
         placeholder='Cari nama dokter favorit kamu'
         renderFilterContent={(visible, setVisible) => (
-          <View style={{
-            backgroundColor: Colors.secondary,
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: 24,
-            paddingTop: 12,
-          }}>
-            <View style={{
-              width: 42,
-              height: 6,
-              borderRadius: 10,
-              alignSelf: 'center',
-              backgroundColor: Colors.textColorSecondary,
+          <CategoriesFilterModal
+            visible={visible}
+            setVisible={setVisible}
+            onApply={(categories, isFiltering) => {
+              setCategories(categories)
+              setIsFiltering(isFiltering)
             }} />
-            <View style={{ height: 24 }} />
-            <Text style={{
-              fontFamily: 'Manrope-Regular',
-              fontSize: 12,
-              color: '#555E67',
-              includeFontPadding: false,
-            }}>Filter berdasarkan</Text>
-            <View style={{ height: 20 }} />
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{
-                fontFamily: 'Manrope-ExtraBold',
-                fontSize: 16,
-                color: '#31373D',
-                includeFontPadding: false,
-              }}>Kategory dokter</Text>
-              <Text style={{
-                fontFamily: 'Manrope-ExtraBold',
-                fontSize: 14,
-                color: Colors.primary,
-                includeFontPadding: false,
-              }}>Reset</Text>
-            </View>
-            <View style={{ height: 16 }} />
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 12 }}>
-              {categories.map(( value, index ) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => toggleSelectedCategories(index)}
-                  activeOpacity={0.8}
-                  style={[{
-                    borderRadius: 12,
-                    borderColor: Colors.textColorSecondary,
-                    borderWidth: 1,
-                    backgroundColor: Colors.secondary,
-                    padding: 14,
-                    marginBottom: 16,
-                    flexGrow: 1,
-                  }, value.selected && {
-                    backgroundColor: Colors.primaryShadow,
-                  }]}>
-                  <Text style={{
-                    fontFamily: 'Manrope-ExtraBold',
-                    fontSize: 11,
-                    color: '#555E67',
-                    includeFontPadding: false,
-                    textAlign: 'center',
-                  }}>{value.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <View style={{ height: 28 }} />
-            <Button
-              label={`Terapkan filter (${filterCount})`}
-              onPress={() => {
-                setVisible(false)
-              }}
-              buttonStyle={{ borderRadius: 8 }}
-              labelStyle={{
-                fontFamily: 'Manrope-ExtraBold',
-                fontSize: 14,
-                color: Colors.secondary,
-                includeFontPadding: false,
-              }}
-              />
-              <View style={{ height: 32 }} />
-          </View>
         )}
         renderFilter={(isFilter, setIsFilter) => (
           <TouchableOpacity
@@ -151,7 +69,7 @@ function FavoriteScreen(): React.JSX.Element {
       <View style={{ height: 8 }} />
       <FlatGrid
         data={
-          filterCount > 0 ?
+          isFiltering ?
           favoritedDoctors
             .filter((value) => {
               return categories

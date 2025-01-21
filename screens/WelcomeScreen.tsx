@@ -22,14 +22,25 @@ function WelcomeScreen(): React.JSX.Element {
       <View style={{height: 6}} />
       <Text style={styles.subtitle}>Do you want some help with your health to get better life?</Text>
       <View style={{height: 25}} />
-      <Button label='Sign Up With Email' labelStyle={styles.buttonLabel}/>
+      <Button
+        onPress={() => navigation.navigate('Register' as never)}
+        label='Sign Up With Email'
+        labelStyle={styles.buttonLabel}/>
       <View style={{height: 16}} />
-      <ButtonWithIcon icon={require('../assets/img/ic_facebook.png')} label='Continue with Facebook' labelStyle={styles.buttonLabel}/>
+      <ButtonWithIcon
+        onPress={() => undefined}
+        icon={require('../assets/img/ic_facebook.png')}
+        label='Continue with Facebook'
+        labelStyle={styles.buttonLabel}/>
       <View style={{height: 16}} />
-      <ButtonWithIcon icon={require('../assets/img/ic_google.png')} label='Continue with Gmail' labelStyle={styles.buttonLabel}/>
+      <ButtonWithIcon
+        onPress={() => undefined}
+        icon={require('../assets/img/ic_google.png')}
+        label='Continue with Gmail'
+        labelStyle={styles.buttonLabel}/>
       <View style={{height: 16}} />
       <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Login' as never)}>
-        <Text style={styles.regularText}>Login</Text>
+        <Text style={styles.regularText}>Masuk</Text>
       </TouchableOpacity>
     </View>
   );

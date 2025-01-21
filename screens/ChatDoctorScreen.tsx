@@ -37,7 +37,7 @@ function Chat(){
     const {params} : RouteProp<{params : {data : InterfaceDataDoctor}},'params'> = useRoute();
     const data = params.data;
     const [messages,setMessages] = useState(data.message);
-    const [document,setDocument] = useState(null);
+    const [document,setDocument] = useState<any>(null);
     const [image,setImage] = useState({uri : ''});
     const layout = useWindowDimensions();
     const crRef = createRef<SectionList>();
@@ -50,15 +50,12 @@ function Chat(){
     useEffect(() => {
         if(!document) return;
         const size = document.size / 1000000;
-        // if(size)
-        console.log(document);
         createNewMessage(document.uri,document.type,setMessages);
     },[document])
 
 
     return(
         <View style={{flex : 1}}>
-            
             <Header profile={data}/>
             <SectionList
                 ref={crRef}
@@ -78,26 +75,37 @@ function SendMessageBar({setMessages,setImage,image,setDocument}: { setDocument 
     const [text,setText] = useState("");
     return( 
     <View style={{width:"100%",height: 80,display : "flex",flexDirection : "row",justifyContent : "space-between", alignItems : "center",gap:5,paddingTop : 10,paddingHorizontal : 15,borderTopWidth : .4,position : 'absolute',bottom : 0,left : 0,backgroundColor: Colors.secondary}}>
-        <Pressable onPress={() => TakeImage.TakeDocumentFromLibrary(setDocument)}>
-            <Image style={{width : 29, height :29}} source={require('../assets/img/ic_attach.png')}/>
-        </Pressable>
-        <View style={{position : 'relative',paddingHorizontal : 10}}>
-            <TextInput style={{width : 270,paddingHorizontal : 10,paddingRight : 60,borderWidth : .4,borderRadius : 20}} placeholder='Message' value={text} onChangeText={text => {setText(text); return text.length > 0? setFocus(previus => true) : setFocus(previus => false)}}/>
+        <View style={{ flexBasis: 30, alignItems: 'center' }}>
+            <Pressable onPress={() => TakeImage.TakeDocumentFromLibrary(setDocument)}>
+                <Image style={{width : 29, height :29}} source={require('../assets/img/ic_attach.png')}/>
+            </Pressable>
+        </View>
+        <View style={{position : 'relative',paddingHorizontal : 10, flex: 1}}>
+            <TextInput style={{paddingHorizontal : 10,paddingRight : 60,borderWidth : .4,borderRadius : 20}} placeholder='Message' value={text} onChangeText={text => {setText(text); return text.length > 0? setFocus(previus => true) : setFocus(previus => false)}}/>
             <Pressable onPress={() => TakeImage.TakePicture(setImage,true)}>
                 <Image style={{width : 24, height :24,position : 'absolute',right : 15,bottom : 7}} source={require('../assets/img/ic_camera.png')}/>
             </Pressable>
         </View>
-        {text.length === 0?<Image style={{width : 18, height :24}} source={require('../assets/img/ic_record_audio.png')}/> : 
-        <Pressable onPress={() => {setText(''); setFocus(false); createNewMessage(text,"text",setMessages)}}><Image style={{width : 28, height :28,}} source={require('../assets/img/ic_send_message.png')}/></Pressable>}
+        <View style={{ flexBasis: 30, alignItems: 'center' }}>
+            {text.length === 0  ?
+            <Image style={{width : 18, height :24}} source={require('../assets/img/ic_record_audio.png')}/>
+            : 
+            <Pressable onPress={() => {setText(''); setFocus(false); createNewMessage(text,"text",setMessages)}}>
+                <Image style={{width : 28, height :28,}} source={require('../assets/img/ic_send_message.png')}/>
+            </Pressable>
+            }
+        </View>
     </View>)
 }
 
 function Header({profile} : {profile : InterfaceDataDoctor}){
     return(
-        <View style={{width : "100%",display : "flex",flexDirection : "row",justifyContent : "space-between",alignItems : "center",paddingHorizontal : 18,paddingVertical : 20}}>
+        <View style={{width : "100%",display : "flex",flexDirection : "row",justifyContent : "space-between",alignItems : "center",paddingHorizontal : 10,paddingVertical : 20}}>
            <BackTab/>
            <ProfileDoctor profile={profile}/>
-           <Image source={require('../assets/img/ic_baseline-phone.png')}/>
+           <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
+            <Image source={require('../assets/img/ic_baseline-phone.png')}/>
+           </View>
         </View>
     )
 }
@@ -105,7 +113,7 @@ function Header({profile} : {profile : InterfaceDataDoctor}){
 function BackTab(){
     const navigation = useNavigation();
     return (
-        <Pressable style={{display : "flex",flexDirection : "row",alignItems:"center",gap : 10}} onPress={() => navigation.goBack()}>
+        <Pressable style={{flex: 0.2, display : "flex",flexDirection : "row",alignItems:"center",gap : 10}} onPress={() => navigation.goBack()}>
              <Image
                 source={require('../assets/img/ic_back_arrow_blue.png')}
                 style={{width: 12, height : 21}}
@@ -126,7 +134,7 @@ const docterProfile = {
 
 function ProfileDoctor({profile} : {profile : InterfaceDataDoctor}){
     return (
-        <View style={{width:200,display : "flex",flexDirection : "row",alignItems:"center",gap : 10}}>
+        <View style={{flex: 0.6, width:200,display : "flex",flexDirection : "row",alignItems:"center",justifyContent:'center',gap : 10}}>
             <Image
                 source={profile.image as ImageProps}
                 style={{width: 37, height : 37,borderRadius : 9999}}
@@ -196,16 +204,12 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
                 );
 
                 if(granted === PermissionsAndroid.RESULTS.GRANTED){
-                    console.log("You Can Acces External Storage");
-                    downloadFile(url);
-                }else{
-                    console.log("You Can't External Storage");
+                    downloadFile(url, true);
                 }
             }catch(err){
-                console.log("err => " + err)
             }
         }
-        async function downloadFile(fromUrl : string,isImage){
+        async function downloadFile(fromUrl : string, isImage: boolean){
             const randomNumber = Math.ceil(new Date().getTime() * Math.random() * 100 / 92);
             const toFile = `${RNFS.DownloadDirectoryPath}/images${randomNumber}${isImage? '.jpg' : '.pdf' }`;
             if(fromUrl.startsWith('data:image')) return base64ToFile(fromUrl,toFile);
@@ -244,7 +248,7 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
     return(
         message.type === "image"? <View style={{display:"flex",flexDirection : "row",justifyContent : isDoctor? "flex-start" : "flex-end",marginTop : 20,paddingHorizontal : 20}}>
         <Pressable style={{position : 'relative',maxWidth : 280, display : "flex",flexDirection : "row",gap:6}} onPress={() => {
-            accessExternalDownload(message.message.uri);
+            accessExternalDownload(message.message as string);
         }}>
             <Image source={message.message as ImageProps} style={{width : 120,height : 120,borderRadius : 8}} />
             <Text style={{display: downloaded? "flex" : "none", position : 'absolute',bottom : 45, left : 5,color : Colors.textColorWhite,fontSize : 18,fontFamily:'Manrope-Bold'}}>Downloaded</Text>

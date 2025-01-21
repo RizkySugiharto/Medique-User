@@ -2,8 +2,8 @@ import { Image, ImageProps, ScrollView, Text,View } from "react-native";
 import Back from "../components/Back";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import Colors from "../styles/colors";
+
 interface InterfaceArticle{
-    // image: require('../assets/img/placeholder_article.png'),
     image : NodeRequire,
     category: string,
     title: string,
@@ -15,7 +15,6 @@ interface InterfaceArticle{
 const ArticleScreen = () =>{
     const {params} : RouteProp<{params : {article : InterfaceArticle}}> = useRoute();
     const article = params.article;
-    console.log(article);
     return(
         <ScrollView showsVerticalScrollIndicator={false}>
             <Back/>

@@ -29,6 +29,13 @@ import OrderAmbulanceGroup from './screens/groups/OrderAmbulanceGroup';
 import RegisterScreen from './screens/RegisterScreen';
 import LoadingScreen from './screens/LoadingScreen';
 import { AmbulanceData, CategoryData, DoctorData, PlaceData, ReviewData, UserData } from './types';
+import AllArticleScreen from './screens/AllArticleScreen';
+import ArticleScreen from './screens/ArticleScreen';
+import Activity from './screens/ActivityScreen';
+import Chat from './screens/ChatDoctorScreen';
+import DetailPesanan from './screens/DetailConsultationScreen';
+import EditInformasiProfile from './screens/EditInformasiProfilScreen';
+import EditAlamatScreen from './screens/EditAlamatProfilScreen';
 
 const doctorsData: DoctorData[] = [
   {
@@ -285,6 +292,13 @@ function App(): React.JSX.Element {
           <Stack.Screen name='Register' component={RegisterScreen}/>
           <Stack.Screen name='ForgotPassword' component={ForgotPasswordGroup}/>
           <Stack.Screen name='CreateNewPassword' component={CreateNewPasswordScreen}/>
+          <Stack.Screen name='AllArticle' component={AllArticleScreen}/>
+          <Stack.Screen name='Article' component={ArticleScreen}/>
+          <Stack.Screen name='Activity' component={Activity}/>
+          <Stack.Screen name='Chat' component={Chat}/>
+          <Stack.Screen name='DetailPesananDoctor' component={DetailPesanan}/>
+          <Stack.Screen name="EditInformasiProfil" component={EditInformasiProfile}/>
+          <Stack.Screen name="EditAlamatProfil" component={EditAlamatScreen}/>
           <Stack.Screen name='PopularDoctor' component={PopularDoctorScreen}/>
           <Stack.Screen name='DoctorCategories' component={DoctorCategoriesScreen}/>
           <Stack.Screen name='DoctorDetails' component={DoctorDetailsScreen}/>

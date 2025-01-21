@@ -105,8 +105,8 @@ export default (): React.JSX.Element => {
       screenOptions={{ headerShown: false }}>
       <Tab.Screen name='Home' component={Home} />
       <Tab.Screen name='Favorite' component={FavoriteScreen}/>
-      <Tab.Screen name='Activity' component={HomeScreen}/>
-      <Tab.Screen name='Profile' component={HomeScreen}/>
+      <Tab.Screen name='Activity' component={ActivityScreen}/>
+      <Tab.Screen name='Profile' component={ProfileScreen}/>
     </Tab.Navigator>
   );
 }

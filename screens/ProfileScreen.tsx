@@ -4,6 +4,8 @@ import Colors from "../styles/colors";
 import { ReactElement } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
+import SessionStorage from "react-native-session-storage";
+import { UserData } from "../types";
 
 
 const featureProfileScreens = [
@@ -17,16 +19,16 @@ const featureProfileScreens = [
         routeTo : "EditAlamatProfil",
         icon : require('../assets/img/ic_address_profile.png')
     },
-    {
-        title : "Bantuan & Dukungan",
-        routeTo : 'BantuanDukunganProfilScreen',
-        icon : require('../assets/img/ic_helper_profile.png')
-    },
-    {
-        title : "Kebijakan privasi",
-        routeTo : 'KebijakanPrivasiProfilScreen',
-        icon : require('../assets/img/ic_lock_profile.png')
-    },
+    // {
+    //     title : "Bantuan & Dukungan",
+    //     routeTo : 'BantuanDukunganProfilScreen',
+    //     icon : require('../assets/img/ic_helper_profile.png')
+    // },
+    // {
+    //     title : "Kebijakan privasi",
+    //     routeTo : 'KebijakanPrivasiProfilScreen',
+    //     icon : require('../assets/img/ic_lock_profile.png')
+    // },
 ]
 
 
@@ -52,11 +54,12 @@ function Dashboard(){
 
 const Profile = () => {
     const layout = useWindowDimensions();
+    const userData: UserData = SessionStorage.getItem('@user_data')
     return(
     <View style={{height : (layout.height) * .45 ,justifyContent : "flex-end",alignItems : "center"}}>
-        <Image style={{width : 120,height : 120,borderRadius: 999}} source={require('../assets/img/placeholder_user.png')} />
-        <Text style={{fontFamily : "Manrope-SemiBold",fontSize : 24,textAlign : 'center'}}>Frendi Anton</Text>
-        <Text style={{fontFamily : "Manrope-Reguler",fontSize : 14,textAlign : 'center'}}>frendianton@gmail.com</Text>
+        <Image style={{width : 120,height : 120,borderRadius: 999}} source={userData.profile} />
+        <Text style={{fontFamily : "Manrope-SemiBold",fontSize : 24,textAlign : 'center'}}>{userData.name}</Text>
+        <Text style={{fontFamily : "Manrope-Reguler",fontSize : 14,textAlign : 'center'}}>{userData.email}</Text>
     </View>
     )
 }
@@ -76,7 +79,10 @@ const KeluarButton = () => {
     const navigation = useNavigation();
     return(
         <View style={{width : layout.width,alignItems : "center"}}>
-            <TouchableOpacity style={{marginTop : 20}}onPress={() => navigation.navigate('Welcome' as never)}>
+            <TouchableOpacity style={{marginTop : 20}}onPress={() => {
+                SessionStorage.setItem('@logged_in', false)
+                navigation.navigate('Welcome' as never)
+            }}>
                 <Text style={{width : 327,maxHeight:56,paddingVertical : 12,fontSize : 20,fontFamily : "Manrope-SemiBold",color : "red",borderWidth : 1,borderColor  : "red",borderRadius : 30,textAlign : "center"}}>Keluar</Text>
             </TouchableOpacity>
         </View>

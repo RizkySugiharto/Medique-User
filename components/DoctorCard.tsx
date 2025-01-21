@@ -47,8 +47,6 @@ function DoctorCard({ data, onToggleFavorite }: Props): React.JSX.Element {
     SessionStorage.setItem('@doctors', newDoctors)
   }
 
-  console.log(data.favorite)
-
   return (
     <>
     <View>
