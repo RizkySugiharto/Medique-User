@@ -3,8 +3,11 @@ import { BottomTabBarProps, createBottomTabNavigator } from '@react-navigation/b
 import { Animated, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Colors from '../../styles/colors';
 import HomeScreen from '../HomeScreen';
+import ActivityScreen from '../ActivityScreen';
 import SessionStorage from 'react-native-session-storage';
 import FavoriteScreen from '../FavoriteScreen';
+import ProfileScreen from '../ProfileScreen';
+import Activity from '../ActivityScreen';
 
 function TabBar({ state, descriptors, navigation}: BottomTabBarProps) {
   const navbarStatusView = SessionStorage.getItem('@navbar_status_view')
@@ -91,8 +94,8 @@ export default (): React.JSX.Element => {
       screenOptions={{ headerShown: false }}>
       <Tab.Screen name='Home' component={HomeScreen}/>
       <Tab.Screen name='Favorite' component={FavoriteScreen}/>
-      <Tab.Screen name='Activity' component={HomeScreen}/>
-      <Tab.Screen name='Profile' component={HomeScreen}/>
+      <Tab.Screen name='Activity' component={Activity}/>
+      <Tab.Screen name='Profile' component={ProfileScreen}/>
     </Tab.Navigator>
   );
 }

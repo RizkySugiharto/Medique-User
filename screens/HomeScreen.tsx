@@ -60,13 +60,25 @@ const articles = [
     image: require('../assets/img/placeholder_article.png'),
     category: 'Covid-19',
     title: 'Kengerian gelombang kedua covid-19',
-    publishDate: new Date(Date.now())
+    content : [
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad molestias eaque mollitia fuga porro eius quasi pariatur qui hic adipisci sapiente nihil consequatur, nostrum nulla et a repellat quidem cum!",
+      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ullam, porro! Totam officia, adipisci vitae quo illo quos maiores hic, ipsam optio sit asperiores doloremque ab debitis commodi saepe voluptatem voluptates a rerum quod incidunt numquam nisi ullam. At error pariatur dolorum aut dolorem quaerat fugiat. Quas ad maxime aliquam inventore impedit at iure amet numquam molestiae! Consequatur quisquam quam veniam. Omnis repudiandae impedit facere cumque, minima ratione officia aliquam? Harum quas maiores, eaque accusamus maxime voluptatum, rem laboriosam id nesciunt unde ipsa tempora, voluptates reiciendis necessitatibus explicabo! Velit, minima autem.",
+     " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quae corrupti quidem hic, magni autem dolore? Nemo eius tempore corporis culpa praesentium delectus nisi molestias, alias modi? Explicabo eius molestiae nihil dignissimos? Dolore molestiae officiis dolorum cum, ipsa ex assumenda. Vero.",
+    ],
+    publishDate: new Date(1584691152 * 1000),
   },
   {
-    image: require('../assets/img/placeholder_article.png'),
-    category: 'Trend',
-    title: 'Virus baru di Indo',
-    publishDate: new Date(Date.now())
+    image: require('../assets/img/placeholder_virus2025.png'),
+    category: 'Kasus Flu A Dan HMPV',
+    title: 'Kasus Flu A dan HMPV Membludak di Tiongkok, Belum Ditemukan di Indonesia',
+    content : [
+      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Neque repudiandae ea nobis laudantium eaque dicta eum inventore asperiores, est eveniet sunt perspiciatis, laboriosam quaerat non natus molestias vel quibusdam tempora aspernatur explicabo deserunt maxime velit.",
+      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iste nobis possimus quia, in distinctio unde hic illo at modi totam! Quisquam, asperiores quod. Esse quasi facere consequatur voluptatibus repellat voluptates molestiae iste assumenda inventore? Ex dicta ratione inventore possimus blanditiis iste, eveniet maiores esse, magni dignissimos quaerat. Enim, repellat adipisci. Quibusdam expedita quaerat reiciendis neque dolores!",
+     " Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi labore esse corrupti praesentium rerum suscipit veniam soluta dolores, debitis sint, quod, excepturi delectus odit voluptates optio cupiditate eius ab blanditiis aut minima incidunt magnam modi. Quae perspiciatis earum explicabo quidem, officia cumque minima fuga soluta consectetur asperiores facilis aspernatur debitis dolores numquam ratione! Ullam quae fugiat officiis omnis repellat dolor commodi perferendis voluptatem saepe sit?",
+     " Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque, praesentium autem sunt, ab ratione dolorum minus saepe nemo, assumenda voluptas aut veritatis debitis possimus deserunt sequi velit. Ad, recusandae cupiditate exercitationem libero perspiciatis reprehenderit, sequi dolore quam soluta repellat illo sunt pariatur laboriosam accusantium itaque sed eligendi. Exercitationem excepturi sit nisi hic, ipsa et voluptas nobis omnis nemo tempore saepe. Earum sapiente veniam adipisci cum ipsam pariatur et mollitia incidunt ratione, amet cupiditate eveniet repellendus perferendis consectetur magni ipsa distinctio eius doloremque porro consequatur delectus laborum quasi. Sequi dignissimos voluptates aliquid possimus enim temporibus, laudantium neque vero ratione expedita exercitationem, culpa in nulla quaerat reiciendis assumenda praesentium iure fuga magnam. Quis neque in explicabo dignissimos, recusandae possimus consequatur officia ipsa ipsum odit accusamus amet ducimus sunt voluptatem quos cum voluptate quia assumenda voluptatibus, doloribus unde, architecto sed. Cumque consectetur quisquam pariatur. Ratione quia quas optio nihil vero aspernatur exercitationem aperiam adipisci tempore dolorum, amet atque labore fuga maxime ullam maiores enim tenetur sapiente veritatis doloremque. Laboriosam optio ea corporis esse. Temporibus voluptatum asperiores architecto quibusdam, rerum adipisci illum ab pariatur optio maxime delectus. Dolore harum consectetur recusandae necessitatibus amet aliquid ipsam nobis inventore, neque iste officia repellendus blanditiis odio labore.",
+     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum esse doloribus eligendi exercitationem mollitia numquam, molestias recusandae voluptates. Animi, fugit!"
+    ],
+    publishDate: new Date(1735807058 * 1000)
   },
 ]
 
@@ -166,7 +178,7 @@ function HomeScreen(): React.JSX.Element {
         <View style={{ height: 42 }} />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={styles.title}>Artikel trending</Text>
-          <TouchableOpacity activeOpacity={0.75}>
+          <TouchableOpacity activeOpacity={0.75} onPress={() => navigation.navigate(...['AllArticle',{articles}] as never)}>
             <Text style={styles.seeAll}>Lihat semua</Text>
           </TouchableOpacity>
         </View>
@@ -177,7 +189,9 @@ function HomeScreen(): React.JSX.Element {
         renderItem={({ index, item }) => (
           <TouchableOpacity
             activeOpacity={0.8}
-            style={styles.articleCard}>
+            style={styles.articleCard}
+            onPress={() => navigation.navigate(...['Article',{article : item}] as never)}
+            >
             <Image source={item.image} style={styles.articleImage}/>
             <View style={{ height: 12 }} />
             <Text style={styles.articleCategory}>{item.category}</Text>
