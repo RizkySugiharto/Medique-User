@@ -19,16 +19,16 @@ const featureProfileScreens = [
         routeTo : "EditAlamatProfil",
         icon : require('../assets/img/ic_address_profile.png')
     },
-    // {
-    //     title : "Bantuan & Dukungan",
-    //     routeTo : 'BantuanDukunganProfilScreen',
-    //     icon : require('../assets/img/ic_helper_profile.png')
-    // },
-    // {
-    //     title : "Kebijakan privasi",
-    //     routeTo : 'KebijakanPrivasiProfilScreen',
-    //     icon : require('../assets/img/ic_lock_profile.png')
-    // },
+    {
+        title : "Bantuan & Dukungan",
+        routeTo : 'BantuanDukunganProfilScreen',
+        icon : require('../assets/img/ic_helper_profile.png')
+    },
+    {
+        title : "Kebijakan privasi",
+        routeTo : 'KebijakanPrivasiProfilScreen',
+        icon : require('../assets/img/ic_lock_profile.png')
+    },
 ]
 
 interface InterfaceUser {
