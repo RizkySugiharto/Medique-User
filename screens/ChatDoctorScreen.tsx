@@ -5,6 +5,7 @@ import RNFS, { DownloadFileOptions } from 'react-native-fs';
 import React, { createRef, ReactElement, useEffect, useRef, useState } from 'react';
 import DocumentPicker, { DocumentPickerResponse } from 'react-native-document-picker';
 import TakeImage from '../utils/TakeImage';
+import RNFetchBlob from 'react-native-blob-util';
 interface InterfaceDataDoctor{
     name : string,
     latestMessage : string,
@@ -31,29 +32,58 @@ interface InterfaceMessage{
     type : string,
     statusRead : boolean
 }
+interface InterfaceMessage{
+    _id : number,
+    message : string | {uri : string,name : string},
+    hour : string,
+    date : string,
+    type : string,
+    statusRead : boolean
+}
 
 
 function Chat(){
     const {params} : RouteProp<{params : {data : InterfaceDataDoctor}},'params'> = useRoute();
     const data = params.data;
     const [messages,setMessages] = useState(data.message);
-    const [document,setDocument] = useState(null);
-    const [image,setImage] = useState({uri : ''});
+    const [document,setDocument] = useState<DocumentPickerResponse>({uri : "",name : "",fileCopyUri : "",type : "",size : 25000});
+    const [image,setImage] = useState<{uri : string,name : string,type : string}>();
     const layout = useWindowDimensions();
     const crRef = createRef<SectionList>();
 
     useEffect(() => {
-        if(!image.uri) return;
-        createNewMessage({uri : image.uri,type : "image",name : image.name },setMessages);
-    },[image])
+        if(image?.uri.length == 0 || !image) return;
+        createNewMessageImage(image as {uri : string,name : string,type : string},setMessages);
+    },[image]);
 
     useEffect(() => {
-        if(!document) return;
-        const size = document.size / 1000000;
-        // if(size)
-        console.log(document);
-        createNewMessage({uri : document.uri, type : document.type,name : document.name},setMessages);
-    },[document])
+        if(!document || document.uri.length == 0) return;
+        if((document.size as number / 1000000) > 2.5) return Alert.alert("Warning!","Maximum File is 2.5MB");
+        const {name,type,status} = makeName(document) as {name : string,type : string,status : boolean};
+        if(!status) return;
+        checkIsImage(document)? createNewMessageImage({uri : document.uri,type,name},setMessages) :  createNewMessageFile({uri : document.uri,type,name},setMessages);
+    },[document]);
+
+    function makeName(document : DocumentPickerResponse){
+        if(document.uri.length === 0) return;
+        let arrName = document.name?.split(".") as string[];
+        let nama = "";
+        arrName.forEach((value,index) => {
+            if(index < (arrName?.length - 1)){
+                nama += value;
+            }else{
+                nama += `.${value}`
+            }
+       })
+       return nama.length > 0? {name : nama,type : arrName[arrName.length -1] ,status : true} : {name : nama,status : false} ;
+    }
+
+    function checkIsImage(document : DocumentPickerResponse) : boolean{
+        const listFormatImage = ["png","jpeg","jpg",];
+        let arrName = document.name?.split(".") as string[];
+        const result = listFormatImage.filter((value) => arrName[arrName.length -1].toLocaleLowerCase() === value)
+        return result.length > 0? true: false;
+    }
 
 
     return(
@@ -88,7 +118,7 @@ function SendMessageBar({setMessages,setImage,image,setDocument}: { setDocument 
             </Pressable>
         </View>
         {text.length === 0?<Image style={{width : 18, height :24}} source={require('../assets/img/ic_record_audio.png')}/> : 
-        <Pressable onPress={() => {setText(''); setFocus(false); createNewMessage({uri : text,type : "text",},setMessages)}}><Image style={{width : 28, height :28,}} source={require('../assets/img/ic_send_message.png')}/></Pressable>}
+        <Pressable onPress={() => {setText(''); setFocus(false); createNewMessage(text,setMessages)}}><Image style={{width : 28, height :28,}} source={require('../assets/img/ic_send_message.png')}/></Pressable>}
     </View>)
 }
 
@@ -115,14 +145,6 @@ function BackTab(){
     )
 }
 
-
-const docterProfile = {
-    name : "Drs. Athalia Putri",
-    lastOnline : '19:30 PM',
-    statusOnline : 'last seen just now',
-    imagePath : require('../assets/img/drs_athalia_putri.png'),
-    acceptCall : true
-}
 
 function ProfileDoctor({profile} : {profile : InterfaceDataDoctor}){
     return (
@@ -179,76 +201,96 @@ function DoctorText({message} : {message : InterfaceMessage}){
 function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,isDoctor : boolean}){
     const [downloaded,setDownloaded] = useState(false);
 
-    const accessExternalDownload = async(url : string) => {
-        if(Platform.OS ="android"){
-            try{
-                console.log("Meminta aksess")
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-                    {
-                        title : "Cool Photo Like Me!",
-                        message : 
-                        'cool photo need' + 
-                        'access your camera!',
-                        buttonNeutral : 'Ask me later',
-                        buttonNegative : 'Cancel',
-                        buttonPositive : 'OK',
-                    },
-                );
+    async function downloadFile(fromUrl : string,isImage = true){
 
-                if(granted === PermissionsAndroid.RESULTS.GRANTED){
-                    console.log("You Can Acces External Storage");
-                    downloadFile(url);
-                }else{
-                    downloadFile(url);
-                    console.log("You Can't acc External Storage");
-                }
+        const randomNumber = Math.ceil(new Date().getTime() * Math.random() * 100 / 92);
+
+        // const toFile = `${RNFS.DownloadDirectoryPath}/${isImage? 'document' : 'image' }${randomNumber}${isImage? '.jpg' : '.pdf' }`;
+        const toFile = `${RNFS.DownloadDirectoryPath}/${isImage? 'document' : 'image' }${randomNumber}.${message.type}`;
+        console.log(message.type === "jpg");
+        console.log(message.type);
+        if(fromUrl.startsWith('data:image')) return base64ToFile(fromUrl,toFile);
+        if(fromUrl.startsWith('content:') && message.type === "jpg") return await baseContentFileJPG(fromUrl,toFile);
+        if(fromUrl.startsWith('content:') && isDocument(message)) return await baseContentDocument(fromUrl,toFile);
+        if(fromUrl.startsWith('content:')) return await baseContentFile(fromUrl,toFile);
+        console.log("masuk sini");
+        const options : DownloadFileOptions = {
+            fromUrl,
+            toFile,
+            begin : (res : any) => {
+                console.log("Download Started => " + res)
+            }
+        } 
+
+        try{
+            const result = await RNFS.downloadFile(options).promise
+            .then((res : any) => setDownloaded(true))
+            .catch((err : any) => console.log("Error => " + err));
+        }catch(err){
+            console.log("Error => " + err);
+        }
+
+        function base64ToFile(base64String : string, path :string) {
+            const base64Data = base64String.replace(/^data:.+;base64,/, '');
+            
+            RNFS.writeFile(path, base64Data, 'base64')
+            .then(() => {
+                console.log('File berhasil disimpan di:', path);
+                setDownloaded(true);
+            })
+            .catch(err => {
+                console.error('Gagal menyimpan file:', err);
+            });
+        }
+        async function baseContentFile(contetUrl : string, path :string) {
+            try{
+                const fileContents = await RNFS.readFile(contetUrl,'utf8');
+                RNFS.writeFile(path, fileContents , 'base64')
+                setDownloaded(true);
+                console.log('File berhasil disimpan di:', path);
             }catch(err){
-                console.log("err => " + err)
+                console.log("error when download file from contentFile =>" + err);
             }
         }
-        async function downloadFile(fromUrl : string,isImage = true){
-            const randomNumber = Math.ceil(new Date().getTime() * Math.random() * 100 / 92);
-            const toFile = `${RNFS.DownloadDirectoryPath}/${isImage? 'document' : 'image' }${randomNumber}${isImage? '.jpg' : '.pdf' }`;
-            console.log(fromUrl);
-            if(fromUrl.startsWith('data:image')) return base64ToFile(fromUrl,toFile);
-            const options : DownloadFileOptions = {
-                fromUrl,
-                toFile,
-                begin : (res : any) => {
-                    console.log("Download Started => " + res)
-                }
-            } 
 
+        async function baseContentFileJPG(contetUrl : string, path :string){
             try{
-                const result = await RNFS.downloadFile(options).promise
-                .then((res : any) => setDownloaded(true))
-                .catch((err : any) => console.log("Error => " + err));
-            }catch(err){
-                console.log("Error => " + err);
+                await RNFetchBlob.fs
+                .cp(contetUrl,path)
+                .then(() => {console.log('File berhasil disimpan di:', path); setDownloaded(true);})
+                .catch((err) => console.log("error when download file from contentFile (JPG) =>" + err))
+            }catch(error){
+                console.log("error when download file from contentFile (JPG) =>" + error);
             }
-
-            function base64ToFile(base64String : string, path :string) {
-                const base64Data = base64String.replace(/^data:.+;base64,/, '');
-                
-                RNFS.writeFile(path, base64Data, 'base64')
-                  .then(() => {
-                    console.log('File berhasil disimpan di:', path);
-                    setDownloaded(true);
-                  })
-                  .catch(err => {
-                    console.error('Gagal menyimpan file:', err);
-                  });
-              }
-              
-
+        }
+        async function baseContentDocument(contetUrl : string, path :string){
+            try{
+                await RNFetchBlob.fs
+                .cp(contetUrl,path)
+                .then(() => {console.log('File berhasil disimpan di:', path); setDownloaded(true)})
+                .catch((err) => console.log("error when download file from contentFile (Document) =>" + err))
+            }catch(error){
+                console.log("error when download file from contentFile (Document) =>" + error);
+            }
+        }
+        function isDocument(message : InterfaceMessage)  :boolean{
+            const documentType = ["docs","docx","pdf","csv"];
+            const result = documentType.filter(value => message.type.toLowerCase() === value);
+            return result.length > 0? true : false;
         }
     }
+
+    function checkIsImage(message : InterfaceMessage) : boolean{
+        console.log(message);
+        const listFormatImage = ["png","jpeg","jpg",];
+        const result = listFormatImage.filter((value) => message.type.toLowerCase() === value);
+        return result.length > 0? true: false;
+    }
+
     return(
-        message.type === "image"? <View style={{display:"flex",flexDirection : "row",justifyContent : isDoctor? "flex-start" : "flex-end",marginTop : 20,paddingHorizontal : 20}}>
+        checkIsImage(message)? <View style={{display:"flex",flexDirection : "row",justifyContent : isDoctor? "flex-start" : "flex-end",marginTop : 20,paddingHorizontal : 20}}>
         <Pressable style={{position : 'relative',maxWidth : 280, display : "flex",flexDirection : "row",gap:6}} onPress={() => {
-            console.log(message.message.uri)
-            accessExternalDownload(message.message.uri);
+            downloadFile(message.message.uri);
         }}>
             <Image source={message.message as ImageProps} style={{width : 120,height : 120,borderRadius : 8}} />
             <Text style={{display: downloaded? "flex" : "none", position : 'absolute',bottom : 45, left : 5,color : Colors.textColorWhite,fontSize : 18,fontFamily:'Manrope-Bold'}}>Downloaded</Text>
@@ -257,9 +299,7 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
     </View> : 
     <View style={{flexDirection : "row",justifyContent : isDoctor? "flex-start" : "flex-end",marginTop : 20,paddingHorizontal : 20}}>
         <Pressable style={{position : 'relative',gap:6,backgroundColor :Colors.primary,borderRadius:5}} onPress={() => {
-            if(message.message.toString().startsWith('image/')){
-                accessExternalDownload(message.message.toString());
-            }
+            downloadFile(message.message.uri,false);
         }}>
             <View style={{
                 padding : 5,
@@ -276,15 +316,7 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
     </View>
     )
 }
-
-function createNewMessage({uri,type,name} : any,setMessages : React.Dispatch<any>){
-    if(uri.length ==0) return;
-    let message = {uri : uri,name : name};
-    if(type == "text"){
-        message = uri; 
-    }else if(type !== "text" || type !== "image" ){
-        message = {uri : uri, name : name};
-    }
+function createNewMessage(message: string,setMessages : React.Dispatch<any>){
     const _id = 2321;
     const date = new Date().toLocaleDateString('id-ID');
     const hour = new Date().toLocaleTimeString('id-ID').replace('.',':').split('.')[0];
@@ -293,11 +325,41 @@ function createNewMessage({uri,type,name} : any,setMessages : React.Dispatch<any
         message,
         date : date,
         hour : hour,
-        type,
+        type : "text",
         statusRead : false
     }
     return setMessages((prev : any) => [...prev,newMessage]);
 }
+
+function createNewMessageImage(message : {uri : string,type :string,name : string},setMessages : React.Dispatch<any>){
+    const _id = 2321;
+    const date = new Date().toLocaleDateString('id-ID');
+    const hour = new Date().toLocaleTimeString('id-ID').replace('.',':').split('.')[0];
+    const newMessage = {
+        _id,
+        message,
+        date : date,
+        hour : hour,
+        type : message.type,
+        statusRead : false
+    }
+    return setMessages((prev : any) => [...prev,newMessage]);
+}
+function createNewMessageFile(message : {uri : string,type :string,name : string},setMessages : React.Dispatch<any>){
+    const _id = 2321;
+    const date = new Date().toLocaleDateString('id-ID');
+    const hour = new Date().toLocaleTimeString('id-ID').replace('.',':').split('.')[0];
+    const newMessage = {
+        _id,
+        message,
+        date : date,
+        hour : hour,
+        type : message.type,
+        statusRead : false
+    }
+    return setMessages((prev : any) => [...prev,newMessage]);
+}
+
 
 
 

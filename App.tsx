@@ -251,6 +251,9 @@ function loadPublicSampleData() {
     profile: require('./assets/img/placeholder_user.png'),
     name: 'Frendi Anton',
     gender: 'Laki-Laki',
+    email : "frendianton@gmail.com",
+    notelp : '08123456789', 
+    alamat : 'jalan pesangonan kanan kiri dan kanan atas',
     birthDate: new Date(Date.parse('1989-09-14')),
   })
   SessionStorage.setItem('@selected_doctor', {
@@ -330,7 +333,7 @@ function App(): React.JSX.Element {
       <StatusBar
         barStyle="light-content"/>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Loading' screenOptions={{headerShown: false}}>
+        <Stack.Navigator initialRouteName='Root' screenOptions={{headerShown: false}}>
           <Stack.Screen name='Loading' component={LoadingScreen}/>
           <Stack.Screen name='Welcome' component={WelcomeScreen}/>
           <Stack.Screen name='Login' component={LoginScreen}/>

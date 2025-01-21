@@ -18,6 +18,9 @@ import SearchBar from '../components/SearchBar';
 const userData = {
   profile: require('../assets/img/placeholder_user.png'),
   name: 'Frendi',
+  email : "frendianton@gmail.com",
+  notelp : '08123456789',
+  alamat : 'jalan pesangonan kanan kiri dan kanan atas'
 }
 
 const doctors = [
