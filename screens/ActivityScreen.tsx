@@ -167,7 +167,7 @@ const messageDoctor2 = [
     },
     {
         _id : 2323,
-        message : {uri : "https://tse2.mm.bing.net/th?id=OIP.qtUTd3JeZ5G-mJ0qI5-FOAHaE3&pid=Api&P=0&h=220"},
+        message : {uri : "https://tse2.mm.bing.net/th?id=OIP.qtUTd3JeZ5G-mJ0qI5-FOAHaE3&pid=Api&P=0&h=220",name : "gambar.png"},
         hour : '14:38',
         date : '13/01/2025',
         type : "image",
@@ -193,7 +193,7 @@ const messageDoctor3 = [
     },
     {
         _id : 2323,
-        message : "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        message : {uri : "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", name : "ilmudokter.pdf"},
         hour : '11:43',
         date : '10/01/2025',
         type : "document",
@@ -261,7 +261,7 @@ const dataMessages = [
         data : [
             {
                 name : "Drs. Athalia Putri",
-                latestMessage : typeof methodData.latestMessage(messageDoctor1)[0].message === "object"? "((image))" : methodData.latestMessage(messageDoctor1)[0].message ,
+                latestMessage : typeof methodData.latestMessage(messageDoctor1)[0].message === "object"? methodData.latestMessage(messageDoctor1)[0].message.name : methodData.latestMessage(messageDoctor1)[0].message ,
                 latestDate : methodData.latestDate(methodData.latestMessage(messageDoctor1)),
                 totalMessages : messageDoctor1.length,
                 unReadMessages :  messageDoctor1.filter(value => !value.statusRead).length,
@@ -275,7 +275,7 @@ const dataMessages = [
         data : [
             {
                 name : "Dr Raki Devon",
-                latestMessage : typeof methodData.latestMessage(messageDoctor2)[0].message === "object"? "((image))" : methodData.latestMessage(messageDoctor2)[0].message,
+                latestMessage : typeof methodData.latestMessage(messageDoctor2)[0].message === "object"? methodData.latestMessage(messageDoctor2)[0].message.name: methodData.latestMessage(messageDoctor2)[0].message,
                 latestDate : methodData.latestDate(methodData.latestMessage(messageDoctor2)),
                 totalMessages : messageDoctor2.length,
                 unReadMessages :  messageDoctor2.filter(value => !value.statusRead).length,
@@ -289,7 +289,7 @@ const dataMessages = [
         data : [
             {
                 name : "Dr. Evan",
-                latestMessage :typeof methodData.latestMessage(messageDoctor3)[0].message === "object"? "((image))" : methodData.latestMessage(messageDoctor3)[0].message,
+                latestMessage :typeof methodData.latestMessage(messageDoctor3)[0].message === "object"? methodData.latestMessage(messageDoctor3)[0].message.name: methodData.latestMessage(messageDoctor3)[0].message,
                 latestDate : methodData.latestDate(methodData.latestMessage(messageDoctor3)),
                 totalMessages : messageDoctor3.length,
                 unReadMessages :  messageDoctor3.filter(value => !value.statusRead).length,

@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import { Alert, useWindowDimensions } from "react-native";
-import { launchImageLibrary,launchCamera, ImagePickerResponse } from "react-native-image-picker";
-import RFNS from 'react-native-fs';
+import React from "react";
+import { Alert } from "react-native";
+import { launchImageLibrary,launchCamera } from "react-native-image-picker";
 import DocumentPicker from 'react-native-document-picker';
 import SessionStorage from "react-native-session-storage";
 
@@ -38,7 +37,7 @@ const TakePicture  = (setImage : React.Dispatch<any>,isFront : boolean = true) =
             }).then((res) => {
                 if(!res.didCancel && res.assets){
                     const assests = res.assets[0];
-                    setImage({uri : `data:image/jpeg;base64,${assests.base64}`})
+                    setImage({uri : `data:image/jpeg;base64,${assests.base64}`,name : assests.fileName, type : assests.type?.split('/')[1],})
                     return true;
                 }
             })
@@ -50,13 +49,13 @@ const TakePicture  = (setImage : React.Dispatch<any>,isFront : boolean = true) =
     return SessionStorage.getItem('@user_data').profile;
 }
 
-const TakeDocumentFromLibrary = (setDocuemnt : React.Dispatch<any>) => {
+const TakeDocumentFromLibrary = (setDocument : React.Dispatch<any>) => {
     const pickFile = async() => {
         try{
             const resFile = await DocumentPicker.pickSingle({
                 type : DocumentPicker.types.allFiles,
             });
-            setDocuemnt(resFile);
+            setDocument(resFile);
         }catch(err){
         }
     }

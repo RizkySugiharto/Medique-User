@@ -68,6 +68,7 @@ export interface UserData {
     gender: Gender,
     birthDate: Date,
     email: string,
+    address: string,
     numberPhone: string,
 }
 

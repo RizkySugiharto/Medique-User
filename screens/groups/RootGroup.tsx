@@ -103,7 +103,7 @@ export default (): React.JSX.Element => {
       initialRouteName='Home'
       tabBar={(props) => <TabBar {...props} />}
       screenOptions={{ headerShown: false }}>
-      <Tab.Screen name='Home' component={Home} />
+      <Tab.Screen name='Home' component={HomeScreen}/>
       <Tab.Screen name='Favorite' component={FavoriteScreen}/>
       <Tab.Screen name='Activity' component={ActivityScreen}/>
       <Tab.Screen name='Profile' component={ProfileScreen}/>

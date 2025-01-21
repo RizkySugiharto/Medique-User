@@ -6,16 +6,20 @@ import { ReactElement, useMemo, useState } from 'react';
 import DocumentPicker from 'react-native-document-picker';
 import {ImagePickerResponse, launchCamera,launchImageLibrary} from 'react-native-image-picker';
 import TakePicture from '../utils/TakeImage.tsx';
+import LabeledRadioGroup from '../components/LabeledRadioGroup.tsx';
 import SessionStorage from 'react-native-session-storage';
 import { Gender, UserData } from '../types.ts';
 import { useNavigation } from '@react-navigation/native';
 
 function EditInformasiProfile(){
-    const navigation = useNavigation()
     const userData: UserData = SessionStorage.getItem('@user_data');
-    const [selectedId, setSelectedId] = useState(userData.gender as string);
-    const [image, setImage] = useState();
+    const [name, setName] = useState(userData.name);
+    const [image,setImage] = useState(userData.profile);
+    const [notelp, setNoTelp] = useState(userData.numberPhone);
+    const [email, setEmail] = useState(userData.email);
+    const [gender,setGender] = useState('0');
     const layout = useWindowDimensions();
+    const navigation = useNavigation();
     const radioButtons = useMemo((): {
         id: Gender,
         label: string,
@@ -46,8 +50,9 @@ function EditInformasiProfile(){
                     <Text style={{width : layout.width,fontFamily: "Manrope-Reguler",fontSize : 16,color:Colors.primary}}>Nama : </Text>
                     <TextInput
                         placeholder='Nama Anda..'
-                        value={userData.name}
                         style={styles.textInput}
+                        value={name}
+                        onChangeText={(text => setName(text))}
                         placeholderTextColor={Colors.textColorSecondary}
                         maxLength={85}
                     />
@@ -56,8 +61,9 @@ function EditInformasiProfile(){
                     <Text style={{width : layout.width,fontFamily: "Manrope-Reguler",fontSize : 16,color:Colors.primary}}>Email : </Text>
                     <TextInput
                         placeholder='Email Anda..'
-                        value={userData.email}
                         style={styles.textInput}
+                        value={email}
+                        onChangeText={(text => setEmail(text))}
                         placeholderTextColor={Colors.textColorSecondary}
                         keyboardType='email-address'
                     />
@@ -68,12 +74,12 @@ function EditInformasiProfile(){
                         placeholder='0812345678'
                         style={styles.textInput}
                         value={userData.numberPhone}
+                        onChangeText={(text => setNoTelp(text))}
                         placeholderTextColor={Colors.textColorSecondary}
-                        keyboardType='numeric'
                         maxLength={16}
                     />
                 </View>
-                <View style={{width : layout.width,paddingHorizontal : 15}}>
+                {/* <View style={{width : layout.width,paddingHorizontal : 15}}>
                     <Text style={{width : layout.width,marginVertical : 10,marginBottom : 25,fontFamily: "Manrope-Reguler",fontSize : 16,color:Colors.primary}}>Jenis kelamin: </Text>
                     <RadioButtonsGroup
                         radioButtons={radioButtons}
@@ -83,15 +89,16 @@ function EditInformasiProfile(){
                     }
                     />
                     <Pressable><Text style={{marginTop: 20,color : Colors.primary,fontFamily : "Manrope-Reguler",fontSize : 16}}>Lupa Password?</Text></Pressable>
-                </View>
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.canGoBack() && navigation.goBack()
-                    }}
-                    style={{justifyContent : "flex-end",alignItems : "center"}}>
+                </View> */}
+                <LabeledRadioGroup name='Jenis Kelamin'  radioProps={radioButtons} value={gender} setValue={setGender} labelStyle={{}}/>
+                <TouchableOpacity style={{justifyContent : "flex-end",alignItems : "center"}} onPress={() => {
+                    const dataUser = {name,email,notelp,gender,alamat : userData.address,profile : userData.profile,birtDate : userData.birthDate}
+                    sessionStorage.setItem("@user_data",JSON.stringify(dataUser));
+                    navigation.goBack();
+                }}>
                     <Text style={{width : 327,padding : 18,borderRadius : 41,fontSize : 20,fontFamily : "Manrope-SemiBold",textAlign : "center",color : Colors.textColorWhite,backgroundColor : Colors.primary}}>Simpan</Text>
                 </TouchableOpacity>
-                <View style={{height : 154}} />
+                {/* <View style={{height : 154}} /> */}
             </View>
         </ScrollView>
     )

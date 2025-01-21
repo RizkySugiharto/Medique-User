@@ -28,112 +28,106 @@ import TrackDoctorScreen from './screens/TrackDoctorScreen';
 import OrderAmbulanceGroup from './screens/groups/OrderAmbulanceGroup';
 import RegisterScreen from './screens/RegisterScreen';
 import LoadingScreen from './screens/LoadingScreen';
-import { AmbulanceData, CategoryData, DoctorData, PlaceData, ReviewData, UserData } from './types';
+import ChatDoctor from './screens/ChatDoctorScreen';
+import DetailPesananDoctor from './screens/DetailConsultationScreen';
+import EditInformasiProfile from './screens/EditInformasiProfilScreen';
+import EditAlamatProfilScreen from './screens/EditAlamatProfilScreen';
 import AllArticleScreen from './screens/AllArticleScreen';
 import ArticleScreen from './screens/ArticleScreen';
 import Activity from './screens/ActivityScreen';
-import Chat from './screens/ChatDoctorScreen';
-import DetailPesanan from './screens/DetailConsultationScreen';
-import EditInformasiProfile from './screens/EditInformasiProfilScreen';
-import EditAlamatScreen from './screens/EditAlamatProfilScreen';
 
-const doctorsData: DoctorData[] = [
-  {
-    id: 1,
-    profile: require('./assets/img/dr_abdul.png'),
-    name: 'Dr. Abdul',
-    category: 'Dokter Spesialis Anak',
-    favorite: false,
-    rating: 4.8,
-    experience: 8,
-    details: {
-      patients: 105,
-      address: 'Rumah sakit asri asih ciputat',
-      description: "Halo, saya Dr. Abdul, dokter umum di Rumah Sakit Sarih Asih. Saya berkomitmen memberikan perawatan terbaik dengan pendekatan empatik dan ramah. Selain berpraktek, saya aktif dalam edukasi kesehatan dan terus memperbarui pengetahuan medis untuk membantu pasien memahami dan menjaga kesehatan mereka dengan lebih baik.",
-      workingTime: 'Senin - Minggu : 09:00 AM - 08:00 PM',
-      price: {
-        from: 100_000,
-        to: 500_000,
-      },
-      reviewCount: 1013,
+function loadPublicSampleData() {
+  SessionStorage.setItem('@favorited_doctors', [
+    {
+      id: 1,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Sumanto',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
     },
-  },
-  {
-    id: 2,
-    profile: require('./assets/img/dr_evan.png'),
-    name: 'Dr. Evan',
-    category: 'Dokter Umum',
-    favorite: true,
-    rating: 4.7,
-    experience: 2,
-    details: {
-      patients: 105,
-      address: 'Rumah sakit asri asih ciputat',
-      description: "Halo, saya Dr. Evan, dokter umum di Rumah Sakit Sarih Asih. Saya berkomitmen memberikan perawatan terbaik dengan pendekatan empatik dan ramah. Selain berpraktek, saya aktif dalam edukasi kesehatan dan terus memperbarui pengetahuan medis untuk membantu pasien memahami dan menjaga kesehatan mereka dengan lebih baik.",
-      workingTime: 'Senin - Minggu : 10:00 AM - 09:00 PM',
-      price: {
-        from: 100_000,
-        to: 500_000,
-      },
-      reviewCount: 2013,
+    {
+      id: 2,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Evan',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
     },
-  },
-  {
-    id: 3,
-    profile: require('./assets/img/dr_sumanto.png'),
-    name: 'Dr. Sumanto',
-    category: 'Dokter Umum',
-    favorite: true,
-    rating: 4.5,
-    experience: 4,
-    details: {
-      patients: 105,
-      address: 'Rumah sakit asri asih ciputat',
-      description: "Halo, saya Dr. Sumanto, dokter umum di Rumah Sakit Sarih Asih. Saya berkomitmen memberikan perawatan terbaik dengan pendekatan empatik dan ramah. Selain berpraktek, saya aktif dalam edukasi kesehatan dan terus memperbarui pengetahuan medis untuk membantu pasien memahami dan menjaga kesehatan mereka dengan lebih baik.",
-      workingTime: 'Senin - Minggu : 09:00 AM - 10:00 PM',
-      price: {
-        from: 100_000,
-        to: 500_000,
-      },
-      reviewCount: 1513,
+    {
+      id: 3,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Evan',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
     },
-  },
-]
-const categoriesData: CategoryData[] = [
-  {
-    icon: require('./assets/img/ic_pediatrician_specialist.png'),
-    name: 'Dokter Spesialis Anak',
-  },
-  {
-    icon: require('./assets/img/ic_general_practitioners.png'),
-    name: 'Dokter Umum',
-  },
-  {
-    icon: require('./assets/img/ic_nutrition_specialist_doctor.png'),
-    name: 'Dokter Spesialis Gizi',
-  },
-  {
-    icon: require('./assets/img/ic_psychiatrist.png'),
-    name: 'Psikiater',
-  },
-  {
-    icon: require('./assets/img/ic_ent_specialist_doctor.png'),
-    name: 'Dokter Spesialis THT',
-  },
-  {
-    icon: require('./assets/img/ic_rehabilitation_doctor.png'),
-    name: 'Dokter Rehabilitasi',
-  },
-  {
-    icon: require('./assets/img/ic_allergy_&_immunology_doctor.png'),
-    name: 'Dokter Alergi & Imunologi',
-  },
-  {
-    icon: require('./assets/img/ic_internal_medicine_specialist.png'),
-    name: 'Dokter Spesialis Penyakit Dalam',
-  },
-]
-const placesData: PlaceData[] = [
+    {
+      id: 4,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Sumanto',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
+    },
+    {
+      id: 5,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Evan',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
+    },
+    {
+      id: 6,
+      profile: require('./assets/img/placeholder_doctor.png'),
+      name: 'Dr. Sumanto',
+      category: 'Dokter Umum',
+      favorite: true,
+      rating: 4.8,
+      experience: 8
+    },
+  ]),
+  SessionStorage.setItem('@categories', [
+    {
+      icon: require('./assets/img/ic_pediatrician_specialist.png'),
+      name: 'Dokter Spesialis Anak',
+    },
+    {
+      icon: require('./assets/img/ic_general_practitioners.png'),
+      name: 'Dokter Umum',
+    },
+    {
+      icon: require('./assets/img/ic_nutrition_specialist_doctor.png'),
+      name: 'Dokter Spesialis Gizi',
+    },
+    {
+      icon: require('./assets/img/ic_psychiatrist.png'),
+      name: 'Psikiater',
+    },
+    {
+      icon: require('./assets/img/ic_ent_specialist_doctor.png'),
+      name: 'Dokter Spesialis THT',
+    },
+    {
+      icon: require('./assets/img/ic_rehabilitation_doctor.png'),
+      name: 'Dokter Rehabilitasi',
+    },
+    {
+      icon: require('./assets/img/ic_allergy_&_immunology_doctor.png'),
+      name: 'Dokter Alergi & Imunologi',
+    },
+    {
+      icon: require('./assets/img/ic_internal_medicine_specialist.png'),
+      name: 'Dokter Spesialis Penyakit Dalam',
+    },
+  ])
+  SessionStorage.setItem('@bookmarked_places', [
     {
       id: '1',
       name: 'Jl. Lombok, Kp. Rawa Lele',
@@ -167,92 +161,7 @@ const placesData: PlaceData[] = [
       },
       distance: 700,
     },
-]
-const ambulancesData: AmbulanceData[] = [
-  {
-    id: 1,
-    name: 'RS Puspita',
-    price: 30_000,
-    address: 'Jalan Serua Indah, Pamulang',
-    location: {
-      lat: -6.300894,
-      lng: 106.702669
-    },
-  },
-  {
-    id: 2,
-    name: 'RS Puspita',
-    price: 30_000,
-    address: 'Jalan Serua Indah, Pamulang',
-    location: {
-      lat: -6.300694,
-      lng: 106.703069,
-    },
-  },
-  {
-    id: 3,
-    name: 'RS Puspita',
-    price: 30_000,
-    address: 'Jalan Serua Indah, Pamulang',
-    location: {
-      lat: -6.301094,
-      lng: 106.703069
-    },
-  },
-  {
-    id: 4,
-    name: 'RS Puspita',
-    price: 30_000,
-    address: 'Jalan Serua Indah, Pamulang',
-    location: {
-      lat: -6.300394,
-      lng: 106.702069
-    },
-  },
-  {
-    id: 5,
-    name: 'RS Puspita',
-    price: 30_000,
-    address: 'Jalan Serua Indah, Pamulang',
-    location: {
-      lat: -6.300094,
-      lng: 106.701869
-    },
-  },
-]
-const reviewsData: ReviewData[] = [
-  {
-    userProfile: require('./assets/img/user_jhon.png'),
-    userName: 'Bang Jhon',
-    rating: 4,
-    message: "Dr. Abdul adalah dokter hebat! Beliau tidak hanya mengobati, tetapi juga memahami kondisi anak saya dengan penuh kasih. Penjelasannya selalu jelas dan membuat kami merasa tenang. Sangat direkomendasikan untuk keluarga mana pun!"
-  },
-  {
-    userProfile: require('./assets/img/user_jhon.png'),
-    userName: 'Bang Jhon',
-    rating: 4.5,
-    message: "Dr. Abdul adalah dokter luar biasa! Beliau tidak hanya mengobati, tetapi juga memahami kondisi anak saya dengan penuh kasih. Penjelasannya selalu jelas dan membuat kami merasa tenang. Sangat direkomendasikan untuk keluarga mana pun!"
-  },
-]
-const userData: UserData = {
-  profile: require('./assets/img/user_frendi.png'),
-  name: 'Frendi Anton',
-  gender: 'Laki-Laki',
-  birthDate: new Date(Date.parse('1989-09-14')),
-  email: 'frendi@gmal.com',
-  numberPhone: '0812618192'
-}
-
-function loadPublicSampleData() {
-  SessionStorage.setItem('@doctors', doctorsData)
-  SessionStorage.setItem('@categories', categoriesData)
-  SessionStorage.setItem('@bookmarked_places', placesData.map((value) => ({...value, bookmark: true})))
-  SessionStorage.setItem('@search_places', [...placesData, placesData[0]])
-  SessionStorage.setItem('@current_location', {
-    lat: -6.300694,
-    lng: 106.702869
-  })
-  SessionStorage.setItem('@nearby_places', placesData)
+  ])
   SessionStorage.setItem('@navbar_status_view', undefined)
   SessionStorage.setItem('@payment_diseases', ['Demam', 'Sakit Kepala'])
   SessionStorage.setItem('@payment_actions', ['Konsultasi', 'Pemeriksaan'])
@@ -260,14 +169,77 @@ function loadPublicSampleData() {
     { name: 'Biaya Dokter', price: 300_000 },
     { name: 'Paracetamol', price: 10_000 },
   ])
-  SessionStorage.setItem('@user_data', userData)
-  SessionStorage.setItem('@selected_doctor', undefined)
-  SessionStorage.setItem('@selected_doctor_status', undefined)
-  SessionStorage.setItem('@selected_category', undefined)
-  SessionStorage.setItem('@selected_payment_method', 0)
-  SessionStorage.setItem('@nearby_ambulances', ambulancesData)
-  SessionStorage.setItem('@reviews', reviewsData)
-  SessionStorage.setItem('@testimoni', [reviewsData[0]])
+  SessionStorage.setItem('@user_data', {
+    profile: require('./assets/img/placeholder_user.png'),
+    name: 'Frendi Anton',
+    gender: 'Laki-Laki',
+    email : "frendianton@gmail.com",
+    numberPhone : '08123456789', 
+    address : 'jalan pesangonan kanan kiri dan kanan atas',
+    birthDate: new Date(Date.parse('1989-09-14')),
+  })
+  SessionStorage.setItem('@selected_doctor', {
+    profile: require('./assets/img/placeholder_doctor.png'),
+    name: 'Dr. Abdul',
+    category: 'Dokter Umum',
+    favorite: false,
+    price: {
+      start: 300_000,
+      end: 500_000
+    }
+  }),
+  SessionStorage.setItem('@nearby_ambulances', [
+    {
+      id: 1,
+      name: 'RS Puspita',
+      price: 30_000,
+      address: 'Jalan Serua Indah, Pamulang',
+      location: {
+        lat: -6.300894,
+        lng: 106.702669
+      },
+    },
+    {
+      id: 2,
+      name: 'RS Puspita',
+      price: 30_000,
+      address: 'Jalan Serua Indah, Pamulang',
+      location: {
+        lat: -6.300694,
+        lng: 106.703069,
+      },
+    },
+    {
+      id: 3,
+      name: 'RS Puspita',
+      price: 30_000,
+      address: 'Jalan Serua Indah, Pamulang',
+      location: {
+        lat: -6.301094,
+        lng: 106.703069
+      },
+    },
+    {
+      id: 4,
+      name: 'RS Puspita',
+      price: 30_000,
+      address: 'Jalan Serua Indah, Pamulang',
+      location: {
+        lat: -6.300394,
+        lng: 106.702069
+      },
+    },
+    {
+      id: 5,
+      name: 'RS Puspita',
+      price: 30_000,
+      address: 'Jalan Serua Indah, Pamulang',
+      location: {
+        lat: -6.300094,
+        lng: 106.701869
+      },
+    },
+  ])
 }
 
 function loadRequiredSessionData() {
@@ -285,7 +257,7 @@ function App(): React.JSX.Element {
       <StatusBar
         barStyle="light-content"/>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Loading' screenOptions={{headerShown: false}}>
+        <Stack.Navigator initialRouteName='Root' screenOptions={{headerShown: false}}>
           <Stack.Screen name='Loading' component={LoadingScreen}/>
           <Stack.Screen name='Welcome' component={WelcomeScreen}/>
           <Stack.Screen name='Login' component={LoginScreen}/>
@@ -295,10 +267,10 @@ function App(): React.JSX.Element {
           <Stack.Screen name='AllArticle' component={AllArticleScreen}/>
           <Stack.Screen name='Article' component={ArticleScreen}/>
           <Stack.Screen name='Activity' component={Activity}/>
-          <Stack.Screen name='Chat' component={Chat}/>
-          <Stack.Screen name='DetailPesananDoctor' component={DetailPesanan}/>
+          <Stack.Screen name='Chat' component={ChatDoctor}/>
+          <Stack.Screen name='DetailPesananDoctor' component={DetailPesananDoctor}/>
           <Stack.Screen name="EditInformasiProfil" component={EditInformasiProfile}/>
-          <Stack.Screen name="EditAlamatProfil" component={EditAlamatScreen}/>
+          <Stack.Screen name="EditAlamatProfil" component={EditAlamatProfilScreen}/>
           <Stack.Screen name='PopularDoctor' component={PopularDoctorScreen}/>
           <Stack.Screen name='DoctorCategories' component={DoctorCategoriesScreen}/>
           <Stack.Screen name='DoctorDetails' component={DoctorDetailsScreen}/>

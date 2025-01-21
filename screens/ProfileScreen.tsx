@@ -1,7 +1,7 @@
 
 import { Image, ImageProps, Pressable, ScrollView, StyleSheet, Text,TouchableOpacity,useWindowDimensions,View } from "react-native";
 import Colors from "../styles/colors";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import SessionStorage from "react-native-session-storage";
@@ -31,6 +31,14 @@ const featureProfileScreens = [
     // },
 ]
 
+interface InterfaceUser {
+    profile: NodeRequire,
+    name: string,
+    email : string,
+    notelp : string | number,
+    alamat : string,
+    birthDate : Date
+  }
 
 function ProfileScreen(){
     const Stack = createNativeStackNavigator();
@@ -38,16 +46,16 @@ function ProfileScreen(){
 }
 
 function Dashboard(){
+    const [user,setUser] = useState<InterfaceUser>(SessionStorage.getItem('@user_data'));
     const layout = useWindowDimensions();
     return(
-        <ScrollView style={{flex : 1,position : "relative"}} showsHorizontalScrollIndicator={false}>
-            <Image style={{width : layout.width * 1,height : (layout.height) * .3,position : "absolute",top : 0,left : 0,objectFit : "fill"}} source={require('../assets/img/bg_blue_profile.png')}/>
-            <Profile/>
-            <View style={{marginTop :40,paddingHorizontal : 20,gap : 15}}>
-                {featureProfileScreens.map(({title,icon,routeTo},index) => <FeatureProfile title={title} icon={icon} routeTo={routeTo} key={index * 90} />)}
+        <ScrollView style={{position : "relative"}} showsHorizontalScrollIndicator={false}>
+            <Image style={{width : layout.width,height : (layout.height) * .38,position : "absolute",top : 0,left : 0,objectFit : "fill"}} source={require('../assets/img/bg_blue_profile.png')}/>
+            <Profile />
+            <View style={{marginTop :40,paddingHorizontal : 20,gap : 24}}>
+                {featureProfileScreens.map(({title,icon,routeTo},index) => <FeatureProfile title={title} icon={icon} routeTo={routeTo} key={index * 90} user={user} />)}
             </View>
             <KeluarButton/>
-            <View style={{height : 130}}/>
         </ScrollView>
     )
 }
@@ -64,10 +72,10 @@ const Profile = () => {
     )
 }
 
-const FeatureProfile = ({title,icon,routeTo} : {title : string, icon : NodeRequire,routeTo :string}) : ReactElement => {
+const FeatureProfile = ({title,icon,routeTo,user} : {title : string, icon : NodeRequire,routeTo :string,user :InterfaceUser}) : ReactElement => {
     const navigation = useNavigation();
     return(
-        <Pressable style={{flexDirection : "row",alignItems : "center",gap : 10}} onPress={() => navigation.navigate(routeTo as never)}>
+        <Pressable style={{flexDirection : "row",alignItems : "center",gap : 10}} onPress={() => navigation.navigate(...[routeTo,{user}] as never)}>
             <Image style={{width : 24,height : 24}} source={icon as ImageProps} />
             <Text style={{fontFamily : "Manrope-Reguler",fontSize : 16}}>{title}</Text>
         </Pressable>
