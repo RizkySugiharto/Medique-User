@@ -182,6 +182,7 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
     const accessExternalDownload = async(url : string) => {
         if(Platform.OS ="android"){
             try{
+                console.log("Meminta aksess")
                 const granted = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
                     {
@@ -199,15 +200,17 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
                     console.log("You Can Acces External Storage");
                     downloadFile(url);
                 }else{
-                    console.log("You Can't External Storage");
+                    downloadFile(url);
+                    console.log("You Can't acc External Storage");
                 }
             }catch(err){
                 console.log("err => " + err)
             }
         }
-        async function downloadFile(fromUrl : string,isImage){
+        async function downloadFile(fromUrl : string,isImage = true){
             const randomNumber = Math.ceil(new Date().getTime() * Math.random() * 100 / 92);
             const toFile = `${RNFS.DownloadDirectoryPath}/${isImage? 'document' : 'image' }${randomNumber}${isImage? '.jpg' : '.pdf' }`;
+            console.log(fromUrl);
             if(fromUrl.startsWith('data:image')) return base64ToFile(fromUrl,toFile);
             const options : DownloadFileOptions = {
                 fromUrl,
@@ -244,6 +247,7 @@ function FormatImage({message,isDoctor = false} : {message : InterfaceMessage,is
     return(
         message.type === "image"? <View style={{display:"flex",flexDirection : "row",justifyContent : isDoctor? "flex-start" : "flex-end",marginTop : 20,paddingHorizontal : 20}}>
         <Pressable style={{position : 'relative',maxWidth : 280, display : "flex",flexDirection : "row",gap:6}} onPress={() => {
+            console.log(message.message.uri)
             accessExternalDownload(message.message.uri);
         }}>
             <Image source={message.message as ImageProps} style={{width : 120,height : 120,borderRadius : 8}} />

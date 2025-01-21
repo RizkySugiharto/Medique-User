@@ -45,9 +45,9 @@ const AllArticleScreen = () => {
 
     return(
         <View>
-            <Back/>
+            {/* <Back/> */}
            <View style={{paddingHorizontal : 20}}>
-            <Text style={{marginLeft:5,fontSize: 20,fontFamily: 'Manrope-Bold'}}>Artikel</Text>
+            <Text style={{marginTop : 20,marginLeft:5,fontSize: 20,fontFamily: 'Manrope-Bold'}}>Artikel</Text>
                 <SearchBarW  placeholder="Search Article Here..."  isFocus={isFocus} setFocus={setFocus} setSearch={setSearch}/>
                 <ScrollView style={{marginTop: 20, padding : 10}} showsVerticalScrollIndicator={false}>
                     {allArticles.map((value,index) => {

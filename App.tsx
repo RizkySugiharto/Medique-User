@@ -330,7 +330,7 @@ function App(): React.JSX.Element {
       <StatusBar
         barStyle="light-content"/>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Root' screenOptions={{headerShown: false}}>
+        <Stack.Navigator initialRouteName='Loading' screenOptions={{headerShown: false}}>
           <Stack.Screen name='Loading' component={LoadingScreen}/>
           <Stack.Screen name='Welcome' component={WelcomeScreen}/>
           <Stack.Screen name='Login' component={LoginScreen}/>
