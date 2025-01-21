@@ -162,19 +162,19 @@ function TrackAmbulanceScreen(): React.JSX.Element {
         ambulanceTrack.status = 'has-arrived';
         setStatus(ambulanceTrack.status)
         clearTimeout(timeout)
-      }, 5000 * 1)
+      }, 10_000 * 1)
     } else if (status === 'has-arrived') {
       const timeout = setTimeout(() => {
         ambulanceTrack.status = 'to-the-hospital';
         setStatus(ambulanceTrack.status)
         clearTimeout(timeout)
-      }, 5000 * 1)
+      }, 10_000 * 1)
     } else if (status === 'to-the-hospital') {
       const timeout = setTimeout(() => {
         ambulanceTrack.status = 'finished';
         setStatus(ambulanceTrack.status)
         clearTimeout(timeout)
-      }, 5000 * 1)
+      }, 10_000 * 1)
     } else if (status === 'finished') {
       SessionStorage.setItem('@navbar_status_view', undefined)
       navigation.navigate(...['OrderAmbulance', { screen: 'OrderAmbulanceFinished' }] as never) 

@@ -172,7 +172,7 @@ const ambulancesData: AmbulanceData[] = [
   {
     id: 1,
     name: 'RS Puspita',
-    price: 30_000,
+    price: 225_000,
     address: 'Jalan Serua Indah, Pamulang',
     location: {
       lat: -6.300894,
@@ -182,7 +182,7 @@ const ambulancesData: AmbulanceData[] = [
   {
     id: 2,
     name: 'RS Puspita',
-    price: 30_000,
+    price: 225_000,
     address: 'Jalan Serua Indah, Pamulang',
     location: {
       lat: -6.300694,
@@ -192,7 +192,7 @@ const ambulancesData: AmbulanceData[] = [
   {
     id: 3,
     name: 'RS Puspita',
-    price: 30_000,
+    price: 225_000,
     address: 'Jalan Serua Indah, Pamulang',
     location: {
       lat: -6.301094,
@@ -202,7 +202,7 @@ const ambulancesData: AmbulanceData[] = [
   {
     id: 4,
     name: 'RS Puspita',
-    price: 30_000,
+    price: 225_000,
     address: 'Jalan Serua Indah, Pamulang',
     location: {
       lat: -6.300394,
@@ -212,7 +212,7 @@ const ambulancesData: AmbulanceData[] = [
   {
     id: 5,
     name: 'RS Puspita',
-    price: 30_000,
+    price: 225_000,
     address: 'Jalan Serua Indah, Pamulang',
     location: {
       lat: -6.300094,
